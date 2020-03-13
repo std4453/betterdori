@@ -16,7 +16,8 @@ const createSong = (music, importNotes = []) => {
         }
         const group = notes[notes.length - 1];
         // end and pos are slide-only
-        group[lane] = { note, flick, pos, end };
+        // lane exported by bestdori counts from 1
+        group.lanes[lane - 1] = { note, flick, pos, end };
     }
 
     return res;
@@ -32,9 +33,9 @@ const compileSong = ({ ranges, notes, music }) => {
         let { beat, bpm } = ranges[rangeInd];
         for (; index < notes.length && notes[index].beat < beat; ++index) {
             res.notes.push({
-                beat: lastTime + (notes[index].beat - lastBeat) / lastBPM * 60,
+                ...notes[index],
+                time: lastTime + (notes[index].beat - lastBeat) / lastBPM * 60,
                 range: rangeInd - 1,
-                lanes: notes[index].lanes,
             });
         }
         lastTime += (beat - lastBeat) / lastBPM * 60;
@@ -51,9 +52,9 @@ const compileSong = ({ ranges, notes, music }) => {
 
     for (; index < notes.length; ++index) {
         res.notes.push({
-            beat: lastTime + (notes[index].beat - lastBeat) / lastBPM * 60,
+            ...notes[index],
+            time: lastTime + (notes[index].beat - lastBeat) / lastBPM * 60,
             range: ranges.length - 1,
-            lanes: notes[index].lanes,
         });
     }
 

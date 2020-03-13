@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import Bars from './Bars';
 import { compileSong } from './Song';
+import Notes from './Notes';
 
 const useStyles = makeStyles({
     root: {
@@ -67,6 +68,7 @@ function Score({ song, setSong }) {
         <div ref={setRoot} className={classes.root}>
             <div style={{ height: music.duration * scale }} className={classes.inner}>
                 <Bars compiled={compiled} division={2}/>
+                <Notes compiled={compiled}/>
                 <div ref={setCaret} className={classes.caret}/>
             </div>
         </div>
