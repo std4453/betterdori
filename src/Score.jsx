@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import Bars from './Bars';
+import { compileSong } from './Song';
 
 const useStyles = makeStyles({
     root: {
@@ -29,24 +30,19 @@ const useStyles = makeStyles({
 const scale = 400;
 const caretOffset = 180;
 
-function Score({ data: { music, notes }, setData }) {
+function Score({ song, setSong }) {
     const classes = useStyles();
-    const [duration, setDuration] = useState(10.0);
-    useEffect(() => {
-        const onDurationChange = () => setDuration(music.duration);
-        music.addEventListener('durationchange', onDurationChange);
-        return () => music.removeEventListener('durationchange', onDurationChange);
-    }, [music]);
+    const { music } = song;
+    const compiled = useMemo(() => compileSong(song), [song]);
     
     const [root, setRoot] = useState(null);
     const [caret, setCaret] = useState(null);
-    const onFrame = useCallback(() => {
-        if (music.paused) return;
 
-        const height = duration * scale;
-        const progress = music.currentTime / duration;
+    const updateCaret = useCallback(() => {
+        const height = music.duration * scale;
+        const progress = music.currentTime / music.duration;
         const caretPosition = (1 - progress) * height;
-
+    
         let viewTop = caretPosition + caretOffset - window.innerHeight;
         // keep caret in view, but not exceeding score boundaries
         if (viewTop < 0) viewTop = 0;
@@ -54,7 +50,8 @@ function Score({ data: { music, notes }, setData }) {
         
         if (root) root.scrollTop = viewTop;
         if (caret) caret.style.top = `${caretPosition}px`;
-    }, [root, music, duration, caret]);
+    }, [root, caret, music]);
+    const onFrame = useCallback(() => music.paused || updateCaret(), [music, updateCaret]);
     useEffect(() => {
         let valid = true;
         const onFrameWrapped = () => {
@@ -64,11 +61,12 @@ function Score({ data: { music, notes }, setData }) {
         requestAnimationFrame(onFrameWrapped);
         return () => { valid = false; };
     }, [onFrame]);
+    useEffect(updateCaret, [caret]);
 
     return (
         <div ref={setRoot} className={classes.root}>
-            <div style={{ height: duration * scale }} className={classes.inner}>
-                <Bars notes={notes} duration={duration} division={2}/>
+            <div style={{ height: music.duration * scale }} className={classes.inner}>
+                <Bars compiled={compiled} division={2}/>
                 <div ref={setCaret} className={classes.caret}/>
             </div>
         </div>

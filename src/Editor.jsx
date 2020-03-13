@@ -1,8 +1,10 @@
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import Score from './Score';
 import test_score from './test_score.json';
 import test_music from './test_music.mp3';
+import { createSong } from './Song';
+import Player from './Player';
 
 const useStyles = makeStyles({
     root: {
@@ -14,44 +16,22 @@ const useStyles = makeStyles({
     },
 });
 
-const preprocessScore = (notes, duration) => {
-    const ranges = [];
-    for (const { type, cmd, beat, bpm } of notes) {
-        if (type !== 'System' || cmd !== 'BPM') continue;
-        ranges.push({ beat, bpm });
-    }
-    return {
-        duration,
-        ranges,
-    }
-}
-
 function Editor() {
     const classes = useStyles();
-    const music = useMemo(() => new Audio(test_music), []);
-    const [data, setData] = useState({
-        music, notes: test_score,
-    });
-    const onKeyPress = useCallback((event) => {
-        const { code } = event;
-        switch (code) {
-            case 'Space': {
-                if (music.paused) music.play();
-                else music.pause();
-                event.stopPropagation();
-                event.preventDefault();
-                break;
-            }
-            default:
-        }
-    }, [music]);
+    const [song, setSong] = useState(createSong(new Audio(test_music), test_score));
+    const [initialized, setInitialized] = useState(false);
     useEffect(() => {
-        window.addEventListener('keypress', onKeyPress);
-        return () => window.removeEventListener('keypress', onKeyPress);
-    }, [onKeyPress]);
+        const onDurationChange = () => setInitialized(song.music.duration > 0);
+        song.music.addEventListener('durationchange', onDurationChange);
+        return () => song.music.removeEventListener('durationchange', onDurationChange);
+    }, [song, initialized]);
+
     return (
         <div className={classes.root}>
-            <Score data={data} setData={setData}/>
+            {initialized && <>
+                <Player song={song}/>
+                <Score song={song} setSong={setSong}/>
+            </>}
         </div>
     );
 };

@@ -39,33 +39,25 @@ const useStyles = makeStyles({
     }
 });
 
-const generateBars = (notes, duration, division) => {
-    let time = 0, lastBPM = 180, lastBeat = 0, bars = [];
-    const addBars = (beat, bpm) => {
-        const interval = 1 / division;
-        for (let i = lastBeat; i < beat; i += interval) {
-            bars.push({
-                bpm: lastBPM, time, beat: i,
-                major: ~~(i - lastBeat) === i - lastBeat, // is integer
-            });
-            time += 60 / lastBPM * interval;
-        }
-        lastBeat = beat;
-        lastBPM = bpm;
-    }
-    for (const { type, cmd, beat, bpm } of notes) {
-        if (type !== 'System' || cmd !== 'BPM') continue;
-        addBars(beat, bpm);
-    }
-    addBars(lastBeat + (duration - time) / 60 * lastBPM, lastBPM);
-    return bars;
-}
-
-function Bars({ notes, duration, division }) {
+function Bars({ compiled: { ranges, music: { duration } }, division }) {
     const classes = useStyles();
-    const bars = useMemo(
-        () => generateBars(notes, duration, division),
-        [notes, duration, division]);
+    const bars = useMemo(() => {
+        const bars = [];
+        for (let i = 1; i < ranges.length; ++i) {
+            const { beat: beat1, bpm, time: time1 } = ranges[i - 1];
+            const { beat: beat2 } = ranges[i];
+            for (let beat = beat1; beat < beat2; beat += 1 / division) {
+                const time = time1 + (beat - beat1) / bpm * 60;
+                const major = ~~(beat - beat1) === beat - beat1;
+                bars.push(<div
+                    key={time}
+                    className={classNames(classes.bar, { [classes.major]: major })}
+                    style={{ bottom: `${time / duration * 100}%` }}
+                />);
+            }
+        }
+        return bars;
+    }, [ranges, duration, division, classes]);
     return (
         <div className={classes.root}>
             <div className={classes.lanes}>
@@ -78,12 +70,7 @@ function Bars({ notes, duration, division }) {
                 <div className={classes.middleLane}/>
                 <div className={classes.sideLane}/>
             </div>
-            {bars.map(({ time, major }) => (
-                <div
-                    key={time}
-                    className={classNames(classes.bar, { [classes.major]: major })}
-                    style={{ bottom: `${time / duration * 100}%` }}/>
-            ))}
+            {bars}
         </div>
     );
 }
