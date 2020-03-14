@@ -23,6 +23,7 @@ const useStyles = makeStyles({
     sideLane: {
         width: 0,
         borderRight: '5px solid #FFF',
+        marginRight: -4,
     },
     middleLane: {
         width: 0,

@@ -9,15 +9,15 @@ const createSong = (music, importNotes = []) => {
     }
 
     // notes, assume last group has a beat lequal to the current note
-    for (const { type, note, lane, beat, pos, end, flick = false } of importNotes) {
+    for (const { type, note, lane, beat, pos, start, end, flick = false } of importNotes) {
         if (type !== 'Note') continue;
         if (notes.length === 0 || notes[notes.length - 1].beat !== beat) {
             notes.push({ beat, lanes: new Array(7) });
         }
         const group = notes[notes.length - 1];
-        // end and pos are slide-only
+        // start, end and pos are slide-only
         // lane exported by bestdori counts from 1
-        group.lanes[lane - 1] = { note, flick, pos, end };
+        group.lanes[lane - 1] = { note, flick, pos, start, end };
     }
 
     return res;
