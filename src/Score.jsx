@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/styles';
 import Bars from './Bars';
 import { compileSong } from './Song';
 import Notes from './Notes';
+import SoundFX from './SoundFX';
 
 const useStyles = makeStyles({
     root: {
@@ -28,7 +29,7 @@ const useStyles = makeStyles({
     },
 });
 
-const scale = 400;
+const scale = 600;
 const caretOffset = 180;
 
 function Score({ song, setSong }) {
@@ -69,6 +70,7 @@ function Score({ song, setSong }) {
             <div style={{ height: music.duration * scale }} className={classes.inner}>
                 <Bars compiled={compiled} division={2}/>
                 <Notes compiled={compiled}/>
+                <SoundFX compiled={compiled}/>
                 <div ref={setCaret} className={classes.caret}/>
             </div>
         </div>
