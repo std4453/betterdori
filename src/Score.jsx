@@ -7,8 +7,9 @@ import { compileSong } from './Song';
 import SoundFX from './SoundFX';
 import Progress from './Progress';
 import Caret from './Caret';
-import Player from './Player';
-import { Tools } from './Tool';
+
+import { Tools } from './tools/Tool';
+import tools from './tools/config';
 
 const useStyles = makeStyles({
     root: {
@@ -50,7 +51,9 @@ function Score({ song, setSong }) {
                 className={classes.inner}
             >
                 <Tools>
-                    <Player compiled={compiled}/>
+                    {tools.map((Component, i) => (
+                        <Component compiled={compiled} key={i}/>
+                    ))}
                 </Tools>
 
                 <Bars compiled={compiled} settings={settings}/>

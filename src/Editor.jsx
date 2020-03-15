@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import Score from './Score';
-import test_score from './test_score.json';
-import test_music from './test_music.mp3';
+import test_score from './assets/test_score.json';
+import test_music from './assets/test_music.mp3';
 import { createSong } from './Song';
 
 const useStyles = makeStyles({
