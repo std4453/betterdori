@@ -4,7 +4,6 @@ import Score from './Score';
 import test_score from './test_score.json';
 import test_music from './test_music.mp3';
 import { createSong } from './Song';
-import Player from './Player';
 
 const useStyles = makeStyles({
     root: {
@@ -29,7 +28,6 @@ function Editor() {
     return (
         <div className={classes.root}>
             {initialized && <>
-                <Player song={song}/>
                 <Score song={song} setSong={setSong}/>
             </>}
         </div>

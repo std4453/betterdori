@@ -1,24 +1,18 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
+import KeyboardEventHandler from 'react-keyboard-event-handler';
+import { Tool } from './Tool';
 
-function Player({ song: { music } }) {
-    const onKeyPress = useCallback((event) => {
-        const { code } = event;
-        switch (code) {
-            case 'Space': {
-                if (music.paused) music.play();
-                else music.pause();
-                event.stopPropagation();
-                event.preventDefault();
-                break;
-            }
-            default:
-        }
+function Player({ compiled: { music } }) {
+    const onSpace = useCallback((_, event) => {
+        if (music.paused) music.play();
+        else music.pause();
+        event.stopPropagation();
+        event.preventDefault();
     }, [music]);
-    useEffect(() => {
-        window.addEventListener('keypress', onKeyPress);
-        return () => window.removeEventListener('keypress', onKeyPress);
-    }, [onKeyPress]);
-    return <div/>;
+    return <>
+        <Tool code="player" keys={['c']}/>
+        <KeyboardEventHandler handleKeys={['space']} onKeyEvent={onSpace}/>
+    </>;
 }
 
 export default Player;

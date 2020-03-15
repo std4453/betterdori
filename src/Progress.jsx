@@ -21,7 +21,7 @@ function Progress({
 
     const [progressEl, setProgressEl] = useState(null);
     const updateProgress = useCallback(() => {
-        if (music.paused || !progressEl) return;
+        if (!progressEl) return;
 
         const height = music.duration * scale;
         const progress = music.currentTime / music.duration;
@@ -38,12 +38,12 @@ function Progress({
     useEffect(() => {
         let valid = true;
         const onFrameWrapped = () => {
-            updateProgress();
+            if (!music.paused) updateProgress();
             if (valid) requestAnimationFrame(onFrameWrapped);
         };
         requestAnimationFrame(onFrameWrapped);
         return () => { valid = false; };
-    }, [updateProgress]);
+    }, [music, updateProgress]);
     useEffect(updateProgress, [updateProgress]);
 
     return (

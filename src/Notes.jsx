@@ -12,10 +12,10 @@ const useStyles = makeStyles({
     },
     note: {
         width: '1em',
-        height: '0.5em',
+        height: '1em',
         borderRadius: '50%',
         position: 'absolute',
-        marginBottom: '-0.25em',
+        marginBottom: '-0.5em',
     },
     single: {
         backgroundColor: '#FFF',

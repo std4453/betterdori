@@ -1,11 +1,14 @@
-import { makeStyles } from '@material-ui/styles';
 import React, { useMemo, useState } from 'react';
+import { makeStyles } from '@material-ui/styles';
+
 import Bars from './Bars';
 import Notes from './Notes';
 import { compileSong } from './Song';
 import SoundFX from './SoundFX';
 import Progress from './Progress';
 import Caret from './Caret';
+import Player from './Player';
+import { Tools } from './Tool';
 
 const useStyles = makeStyles({
     root: {
@@ -46,6 +49,10 @@ function Score({ song, setSong }) {
                 style={{ height: compiled.music.duration * settings.scale }}
                 className={classes.inner}
             >
+                <Tools>
+                    <Player compiled={compiled}/>
+                </Tools>
+
                 <Bars compiled={compiled} settings={settings}/>
                 <Notes compiled={compiled}/>
                 <SoundFX compiled={compiled}/>
