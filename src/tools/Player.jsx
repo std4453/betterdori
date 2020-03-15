@@ -20,7 +20,10 @@ function Player({ music, time2Timers, markers, setMarkers, settings: { division 
         // if quantized result exceeds the previous range, it falls on the beginning
         // of the next range instead
         if (quantizedBeat > rangeEndBeat) quantizedBeat = rangeEndBeat;
-        setMarkers(markers.insert(quantizedBeat, {}));
+        // markers are unique in time, so one at a time
+        if (!markers.find(quantizedBeat).valid) {
+            setMarkers(markers.insert(quantizedBeat, {}));
+        }
     }, [division, markers, music, setMarkers, time2Timers]);
     return <>
         <Tool code="player" keys={['c']}/>
