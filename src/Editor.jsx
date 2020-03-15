@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import Score from './Score';
-import test_score from './assets/test_score.json';
 import test_music from './assets/test_music.mp3';
-import { createSong } from './Song';
 
 const useStyles = makeStyles({
     root: {
@@ -17,19 +15,17 @@ const useStyles = makeStyles({
 
 function Editor() {
     const classes = useStyles();
-    const [song, setSong] = useState(createSong(new Audio(test_music), test_score));
+    const music = useMemo(() => new Audio(test_music), []);
     const [initialized, setInitialized] = useState(false);
     useEffect(() => {
-        const onDurationChange = () => setInitialized(song.music.duration > 0);
-        song.music.addEventListener('durationchange', onDurationChange);
-        return () => song.music.removeEventListener('durationchange', onDurationChange);
-    }, [song, initialized]);
+        const onDurationChange = () => setInitialized(music.duration > 0);
+        music.addEventListener('durationchange', onDurationChange);
+        return () => music.removeEventListener('durationchange', onDurationChange);
+    }, [music, initialized]);
 
     return (
         <div className={classes.root}>
-            {initialized && <>
-                <Score song={song} setSong={setSong}/>
-            </>}
+            {initialized && <Score music={music}/>}
         </div>
     );
 };

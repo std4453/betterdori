@@ -1,15 +1,17 @@
 import React, { useMemo, useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
+import createTree from 'functional-red-black-tree';
 
 import Bars from './Bars';
 import Notes from './Notes';
-import { compileSong } from './Song';
 import SoundFX from './SoundFX';
 import Progress from './Progress';
 import Caret from './Caret';
 
 import { Tools } from './tools/Tool';
 import tools from './tools/config';
+
+import testScore from './assets/test_score.json';
 
 const useStyles = makeStyles({
     root: {
@@ -36,9 +38,73 @@ const settings = {
     division: 2,
 };
 
-function Score({ song, setSong }) {
+
+function Score({ music }) {
     const classes = useStyles();
-    const compiled = useMemo(() => compileSong(song), [song]);
+
+    const initialChart = testScore;
+    const initialTimers = useMemo(() => {
+        let res = createTree();
+        for (const { type, cmd, beat, bpm } of initialChart) {
+            if (type !== 'System' || cmd !== 'BPM') continue;
+            res = res.insert(beat, { bpm });
+        }
+        return res;
+    }, [initialChart]);
+    const initialNotes = useMemo(() => {
+        let res = createTree();
+        for (const { type, beat, lane, ...rest } of initialChart) {
+            if (type !== 'Note') continue;
+            res = res.insert(beat, { ...rest, lane: lane - 1 });
+        }
+        return res;
+    }, [initialChart]);
+    const [timers, setTimers] = useState(initialTimers);
+    const [notes, setNotes] = useState(initialNotes);
+    const [markers, setMarkers] = useState(createTree());
+    
+    const ranges = useMemo(() => {
+        const res = [];
+        let lastTime = 0;
+        for (let it1 = timers.begin, it2 = timers.at(1); it1.hasNext; it1.next(), it2.next()) {
+            const { key: beat1, value: { bpm } } = it1, { key: beat2 } = it2;
+            const time1 = lastTime, time2 = lastTime + (beat2 - beat1) / bpm * 60;
+            res.push({ time1, time2, beat1, beat2, bpm });
+            lastTime = time2;
+        }
+        const { key: beat1, value: { bpm } } = timers.end;
+        res.push({
+            time1: lastTime, time2: music.duration,
+            beat1, beat2: (music.duration - lastTime) / 60 * bpm + beat1, bpm
+        });
+        return res;
+    }, [timers, music]);
+    const time2Notes = useMemo(() => {
+        let res = createTree();
+        for (const { beat1, beat2, time1, bpm } of ranges) {
+            // eslint-disable-next-line no-loop-func
+            notes.forEach((beat, note) => {
+                const time = (beat - beat1) / bpm * 60 + time1;
+                res = res.insert(time, { ...note, beat });
+            }, beat1, beat2);
+        }
+        return res;
+    }, [ranges, notes]);
+    const time2Markers = useMemo(() => {
+        let res = createTree();
+        for (const { beat1, beat2, time1, bpm } of ranges) {
+            // eslint-disable-next-line no-loop-func
+            markers.forEach((beat, marker) => {
+                const time = (beat - beat1) / bpm * 60 + time1;
+                res = res.insert(time, { ...marker, beat });
+            }, beat1, beat2);
+        }
+        return res;
+    }, [ranges, markers]);
+    const params = {
+        music, timers, setTimers, notes, setNotes, markers, setMarkers,
+        ranges, time2Notes, time2Markers, settings,
+    };
     
     const [root, setRoot] = useState(null);
     const [inner, setInner] = useState(null);
@@ -47,20 +113,19 @@ function Score({ song, setSong }) {
         <div ref={setRoot} className={classes.root}>
             <div
                 ref={setInner}
-                style={{ height: compiled.music.duration * settings.scale }}
-                className={classes.inner}
-            >
+                style={{ height: music.duration * settings.scale }}
+                className={classes.inner}>
                 <Tools>
                     {tools.map((Component, i) => (
-                        <Component compiled={compiled} key={i}/>
+                        <Component key={i} {...params}/>
                     ))}
                 </Tools>
 
-                <Bars compiled={compiled} settings={settings}/>
-                <Notes compiled={compiled}/>
-                <SoundFX compiled={compiled}/>
-                <Progress compiled={compiled} containerEl={root} settings={settings}/>
-                <Caret compiled={compiled} innerEl={inner}/>
+                <Bars {...params}/>
+                <Notes {...params}/>
+                <SoundFX {...params}/>
+                <Progress {...params} containerEl={root}/>
+                <Caret {...params} innerEl={inner}/>
             </div>
         </div>
     );

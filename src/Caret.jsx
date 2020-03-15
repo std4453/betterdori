@@ -24,7 +24,7 @@ const useStyles = makeStyles({
     },
 });
 
-function Caret({ compiled: { music, notesIndex }, innerEl }) {
+function Caret({ time2Notes, music: { duration }, innerEl }) {
     const classes = useStyles();
 
     const [caretEl, setCaretEl] = useState(null);
@@ -34,10 +34,10 @@ function Caret({ compiled: { music, notesIndex }, innerEl }) {
         const { y, height } = innerEl.getBoundingClientRect();
         const top = e.clientY - y;
         caretEl.style.top = `${top}px`;
-        const time = (1 - top / height) * music.duration;
-        const notesCount = notesIndex.le(time).value;
+        const time = (1 - top / height) * duration;
+        const notesCount = time2Notes.le(time).index;
         notesCounterEl.innerHTML = `${notesCount}`;
-    }, [caretEl, innerEl, notesCounterEl, music.duration, notesIndex]);
+    }, [caretEl, innerEl, notesCounterEl, duration, time2Notes]);
     useEffect(() => {
         if (!innerEl) return;
         innerEl.addEventListener('mousemove', updateProgress);

@@ -41,13 +41,11 @@ const useStyles = makeStyles({
     },
 });
 
-function Bars({ compiled: { ranges, music: { duration } }, settings: { division } }) {
+function Bars({ music: { duration }, ranges, settings: { division } }) {
     const classes = useStyles();
     const bars = useMemo(() => {
         const bars = [];
-        for (let i = 1; i < ranges.length; ++i) {
-            const { beat: beat1, bpm, time: time1 } = ranges[i - 1];
-            const { beat: beat2 } = ranges[i];
+        for (const { beat1, beat2, bpm, time1 } of ranges) {
             for (let beat = beat1; beat < beat2; beat += 1 / division) {
                 const time = time1 + (beat - beat1) / bpm * 60;
                 const major = ~~(beat - beat1) === beat - beat1;

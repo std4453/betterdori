@@ -56,54 +56,37 @@ const useStyles = makeStyles({
     },
 });
 
-function Notes({ compiled: { notes, music: { duration } } }) {
+function Notes({ time2Notes, music: { duration } }) {
     const classes = useStyles();
     const children = useMemo(() => {
         const res = [];
 
         ['A', 'B'].forEach((pos) => {
             let lastY = 0, lastLane = -1;
-            for (const { time, lanes } of notes) {
-                for (let lane = 0; lane < 7; ++lane) {
-                    if (typeof lanes[lane] === 'undefined') continue;
-                    const { note, pos: notePos, end } = lanes[lane];
-                    if (note !== 'Slide' || pos !== notePos) continue;
-                    if (lastLane !== -1) {
-                        res.push(<Snake x0={lastLane} x1={lane} y0={lastY} y1={time / duration}/>);
-                    }
-                    if (end) lastLane = -1;
-                    else {
-                        lastLane = lane;
-                        lastY = time / duration;
-                    }
+            time2Notes.forEach((time, { note, pos: notePos, lane, end }) => {
+                if (note !== 'Slide' || pos !== notePos) return;
+                if (lastLane !== -1) {
+                    res.push(<Snake x0={lastLane} x1={lane} y0={lastY} y1={time / duration}/>);
                 }
-            }
+                lastLane = end ? -1 : lane;
+                lastY = time / duration;
+            });
         });
 
-        for (const { time, lanes } of notes) {
+        for (let it = time2Notes.begin; it.hasNext;) {
+            const { key: time } = it;
             let minLane = 8, maxLane = -1;
-            for (let lane = 0; lane < 7; ++lane) {
-                if (typeof lanes[lane] === 'undefined') continue;
-                const { note, start, end, flick } = lanes[lane];
+            do {
+                const { lane, note: type, start, end } = it.value;
                 // Synchronus tap line appears two notes possess the same beat,
                 // but middle slide notes are not counted
-                if (note !== 'Slide' || start || end) {
+                if (type !== 'Slide' || start || end) {
                     minLane = Math.min(minLane, lane);
                     maxLane = Math.max(maxLane, lane);
                 }
-                res.push(<div
-                    className={classNames(classes.note, {
-                        [classes.single]: note === 'Single' && !flick,
-                        [classes.slide]: note === 'Slide' && (start || end) && !flick,
-                        [classes.flick]: flick,
-                        [classes.middle]: note === 'Slide' && !(start || end),
-                    })}
-                    style={{
-                        bottom: `${time / duration * 100}%`,
-                        left: `${lane / 7 * 100}%`,
-                    }}
-                />)
-            }
+                it.next();
+            } while (it.key <= time && it.hasNext);
+
             if (minLane < maxLane - 1) { // at least two notes, distance >= 2, display sync tap line
                 res.push(<div
                     className={classes.tapLine}
@@ -116,8 +99,23 @@ function Notes({ compiled: { notes, music: { duration } } }) {
             }
         }
 
+        time2Notes.forEach((time, { lane, note: type, flick, start, end }) => {
+            res.push(<div
+                className={classNames(classes.note, {
+                    [classes.single]: type === 'Single' && !flick,
+                    [classes.slide]: type === 'Slide' && (start || end) && !flick,
+                    [classes.flick]: flick,
+                    [classes.middle]: type === 'Slide' && !(start || end),
+                })}
+                style={{
+                    bottom: `${time / duration * 100}%`,
+                    left: `${lane / 7 * 100}%`,
+                }}
+            />)
+        });
+
         return res;
-    }, [classes, notes, duration]);
+    }, [time2Notes, duration, classes]);
     return (
         <div className={classes.root}>
             {children}

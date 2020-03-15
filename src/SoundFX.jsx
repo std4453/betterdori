@@ -4,7 +4,7 @@ import { useEffect, useMemo } from 'react';
 import flickFX from './assets/flick.mp3';
 import tapFX from './assets/tap.mp3';
 
-function SoundFX({ compiled: { notes, music } }) {
+function SoundFX({ music, time2Notes }) {
     const tap = useMemo(() => new Howl({ src: [tapFX] }), []);
     const flick = useMemo(() => new Howl({ src: [flickFX] }), []);
 
@@ -14,21 +14,15 @@ function SoundFX({ compiled: { notes, music } }) {
     useEffect(() => {
         let lastTime = 0;
         const onFrame = () => {
-            for (const { lanes } of notes.filter(
-                ({ time }) => time > lastTime && time <= music.currentTime
-            )) {
+            let hasTap = false, hasFlick = false;
+            time2Notes.forEach((_, { flick }) => {
                 // both sound effects are played only once in one frame
-                let hasTap = false, hasFlick = false;
-                for (let lane = 0; lane < 7; ++lane) {
-                    if (typeof lanes[lane] === 'undefined') continue;
-                    const { flick } = lanes[lane];
-                    if (flick) hasFlick = true;
-                    else hasTap = true;
-                }
-                if (hasTap) tap.play();
-                if (hasFlick) flick.play();
-            }
+                if (flick) hasFlick = true;
+                else hasTap = true;
+            }, lastTime, music.currentTime);
             lastTime = music.currentTime;
+            if (hasTap) tap.play();
+            if (hasFlick) flick.play();
         };
 
         let valid = true;
@@ -38,7 +32,7 @@ function SoundFX({ compiled: { notes, music } }) {
         };
         requestAnimationFrame(onFrameWrapped);
         return () => { valid = false; };
-    }, [notes, flick, tap, music]);
+    }, [flick, tap, music, time2Notes]);
 
     return <div/>;
 };
