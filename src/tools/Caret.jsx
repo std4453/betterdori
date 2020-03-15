@@ -29,7 +29,7 @@ function Caret({ time2Notes, music: { duration }, innerEl }) {
 
     const [caretEl, setCaretEl] = useState(null);
     const [notesCounterEl, setNotesCounterEl] = useState(null);
-    const updateProgress = useCallback((e) => {
+    const updateCaret = useCallback((e) => {
         if (!caretEl || !innerEl || !notesCounterEl) return;
         const { y, height } = innerEl.getBoundingClientRect();
         const top = e.clientY - y;
@@ -40,9 +40,9 @@ function Caret({ time2Notes, music: { duration }, innerEl }) {
     }, [caretEl, innerEl, notesCounterEl, duration, time2Notes]);
     useEffect(() => {
         if (!innerEl) return;
-        innerEl.addEventListener('mousemove', updateProgress);
-        return () => innerEl.removeEventListener('mousemove', updateProgress);
-    }, [innerEl, updateProgress]);
+        innerEl.addEventListener('mousemove', updateCaret);
+        return () => innerEl.removeEventListener('mousemove', updateCaret);
+    }, [innerEl, updateCaret]);
 
     return (
         <div ref={setCaretEl} className={classes.root}>

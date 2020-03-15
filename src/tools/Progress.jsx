@@ -12,11 +12,11 @@ const useStyles = makeStyles({
     },
 });
 
-function Progress({ music, containerEl, settings: { follow, scale, progressOffset } }) {
+function Progress({ music, containerEl, innerEl, settings: { follow, scale, progressOffset } }) {
     const classes = useStyles();
 
     const [progressEl, setProgressEl] = useState(null);
-    const updateProgress = useCallback(() => {
+    const updateProgress = useCallback((noscroll = false) => {
         if (!progressEl) return;
 
         const height = music.duration * scale;
@@ -27,7 +27,7 @@ function Progress({ music, containerEl, settings: { follow, scale, progressOffse
         // keep caret in view, but not exceeding score boundaries
         if (viewTop < 0) viewTop = 0;
         else if (caretPosition + progressOffset > height) viewTop = height - window.innerHeight;
-        if (follow && containerEl) containerEl.scrollTop = viewTop;
+        if (follow && !noscroll && containerEl) containerEl.scrollTop = viewTop;
 
         progressEl.style.top = `${caretPosition}px`;
     }, [containerEl, progressEl, music, follow, scale, progressOffset]);
@@ -41,6 +41,19 @@ function Progress({ music, containerEl, settings: { follow, scale, progressOffse
         return () => { valid = false; };
     }, [music, updateProgress]);
     useEffect(updateProgress, [updateProgress]);
+
+    const seekProgress = useCallback((e) => {
+        if (!innerEl) return;
+        const { y, height } = innerEl.getBoundingClientRect();
+        const top = e.clientY - y;
+        music.currentTime = (1 - top / height) * music.duration;
+        updateProgress(true);
+    }, [innerEl, music, updateProgress]);
+    useEffect(() => {
+        if (!innerEl) return;
+        innerEl.addEventListener('click', seekProgress);
+        return () => innerEl.removeEventListener('click', seekProgress);
+    }, [innerEl, seekProgress]);
 
     return (
         <div ref={setProgressEl} className={classes.root}/>

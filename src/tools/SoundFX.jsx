@@ -14,6 +14,7 @@ function SoundFX({ music, time2Notes }) {
     useEffect(() => {
         let lastTime = 0;
         const onFrame = () => {
+            if (music.paused) return;
             let hasTap = false, hasFlick = false;
             time2Notes.forEach((_, { flick }) => {
                 // both sound effects are played only once in one frame
