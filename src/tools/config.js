@@ -5,6 +5,7 @@ import SoundFX from './SoundFX';
 import Progress from './Progress';
 import Caret from './Caret';
 import Markers from './Markers';
+import Placement from './Placement';
 
 const tools = [
     Player,
@@ -13,6 +14,7 @@ const tools = [
     SoundFX,
     Progress,
     Caret,
+    Placement,
     Markers,
 ];
 

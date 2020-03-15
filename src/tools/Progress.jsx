@@ -1,5 +1,6 @@
+import React, { useCallback, useEffect, useState, useContext } from 'react';
 import { makeStyles } from '@material-ui/styles';
-import React, { useCallback, useEffect, useState } from 'react';
+import { ToolContext } from './Tool';
 
 const useStyles = makeStyles({
     root: {
@@ -40,7 +41,6 @@ function Progress({ music, containerEl, innerEl, settings: { follow, scale, prog
         requestAnimationFrame(onFrameWrapped);
         return () => { valid = false; };
     }, [music, updateProgress]);
-    useEffect(updateProgress, [updateProgress]);
 
     const seekProgress = useCallback((e) => {
         if (!innerEl) return;
@@ -55,7 +55,9 @@ function Progress({ music, containerEl, innerEl, settings: { follow, scale, prog
         return () => innerEl.removeEventListener('click', seekProgress);
     }, [innerEl, seekProgress]);
 
-    return (
+    const { code } = useContext(ToolContext);
+    useEffect(updateProgress, [updateProgress, code]);
+    return code === 'player' && (
         <div ref={setProgressEl} className={classes.root}/>
     );
 }
