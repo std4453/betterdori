@@ -1,22 +1,26 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { makeStyles } from '@material-ui/styles';
+import React, { useCallback, useEffect, useState } from 'react';
 
 const useStyles = makeStyles({
     root: {
         position: 'absolute',
-        left: 0,
-        width: '100%',
+        left: `${2 / 11 * 100}%`,
+        right: `${2 / 11 * 100}%`,
         height: 0,
-        borderBottom: '3px solid #FFF',
+        borderBottom: '3px solid #5996FF',
         marginTop: -1.5,
     },
     notesCounter: {
         position: 'absolute',
-        left: 0,
+        right: '100%',
         top: 0,
-        margin: 10,
-        fontSize: 18,
-        color: '#FFF',
+        marginTop: '-0.5em',
+        paddingRight: '0.25em',
+        fontSize: '0.6em',
+        lineHeight: 1,
+        color: '#5996FF',
+        fontFamily: 'DIN',
+        fontWeight: 'normal',
     },
 });
 

@@ -11,6 +11,7 @@ const useStyles = makeStyles({
     root: {
         position: 'relative',
         width: 470,
+        fontSize: `${470 / 11}px`,
         height: '100%',
         backgroundColor: '#000000',
         overflow: 'auto',
@@ -28,6 +29,7 @@ const settings = {
     scale: 600,
     follow: true,
     progressOffset: 180,
+    division: 2,
 };
 
 function Score({ song, setSong }) {
@@ -44,7 +46,7 @@ function Score({ song, setSong }) {
                 style={{ height: compiled.music.duration * settings.scale }}
                 className={classes.inner}
             >
-                <Bars compiled={compiled} division={2}/>
+                <Bars compiled={compiled} settings={settings}/>
                 <Notes compiled={compiled}/>
                 <SoundFX compiled={compiled}/>
                 <Progress compiled={compiled} containerEl={root} settings={settings}/>

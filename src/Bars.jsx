@@ -38,10 +38,10 @@ const useStyles = makeStyles({
     },
     major: {
         borderBottom: '1px solid #FFF',
-    }
+    },
 });
 
-function Bars({ compiled: { ranges, music: { duration } }, division }) {
+function Bars({ compiled: { ranges, music: { duration } }, settings: { division } }) {
     const classes = useStyles();
     const bars = useMemo(() => {
         const bars = [];

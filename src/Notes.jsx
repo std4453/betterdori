@@ -119,7 +119,7 @@ function Notes({ compiled: { notes, music: { duration } } }) {
         return res;
     }, [classes, notes, duration]);
     return (
-        <div className={classes.root} style={{ fontSize: `${470 / 11}px`}}>
+        <div className={classes.root}>
             {children}
         </div>
     );
