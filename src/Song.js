@@ -1,3 +1,5 @@
+import createTree from 'functional-red-black-tree';
+
 const createSong = (music, importNotes = []) => {
     const res = { ranges: [], notes: [], music };
     const { ranges, notes } = res;
@@ -56,6 +58,23 @@ const compileSong = ({ ranges, notes, music }) => {
             time: lastTime + (notes[index].beat - lastBeat) / lastBPM * 60,
             range: ranges.length - 1,
         });
+    }
+
+    {
+        let tree = createTree().insert(0, 0), totalNotes = 0;
+        for (const { time, lanes } of res.notes) {
+            totalNotes += lanes.filter(slot => typeof slot !== 'undefined').length;
+            tree = tree.insert(time, totalNotes);
+        }
+        res.notesIndex = tree;
+    };
+
+    {
+        let tree = createTree();
+        for (const { bpm, time } of res.ranges) {
+            tree = tree.insert(time, bpm);
+        }
+        res.rangesIndex = tree;
     }
 
     return res;
