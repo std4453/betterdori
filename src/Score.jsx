@@ -2,12 +2,6 @@ import React, { useMemo, useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import createTree from 'functional-red-black-tree';
 
-import Bars from './Bars';
-import Notes from './Notes';
-import SoundFX from './SoundFX';
-import Progress from './Progress';
-import Caret from './Caret';
-
 import { Tools } from './tools/Tool';
 import tools from './tools/config';
 
@@ -79,6 +73,14 @@ function Score({ music }) {
         });
         return res;
     }, [timers, music]);
+    const time2Timers = useMemo(() => {
+        let res = createTree();
+        for (const { time1: time, beat1: beat, bpm } of ranges) {
+            res = res.insert(time, { beat, bpm });
+        }
+        res = res.insert(ranges[ranges.length - 1].time2, { beat: ranges[ranges.length - 1].beat2 });
+        return res;
+    }, [ranges]);
     const time2Notes = useMemo(() => {
         let res = createTree();
         for (const { beat1, beat2, time1, bpm } of ranges) {
@@ -101,13 +103,14 @@ function Score({ music }) {
         }
         return res;
     }, [ranges, markers]);
-    const params = {
-        music, timers, setTimers, notes, setNotes, markers, setMarkers,
-        ranges, time2Notes, time2Markers, settings,
-    };
-    
+
     const [root, setRoot] = useState(null);
     const [inner, setInner] = useState(null);
+    const params = {
+        music, timers, setTimers, notes, setNotes, markers, setMarkers,
+        ranges, time2Timers, time2Notes, time2Markers, settings,
+        containerEl: root, innerEl: inner,
+    };
 
     return (
         <div ref={setRoot} className={classes.root}>
@@ -120,12 +123,6 @@ function Score({ music }) {
                         <Component key={i} {...params}/>
                     ))}
                 </Tools>
-
-                <Bars {...params}/>
-                <Notes {...params}/>
-                <SoundFX {...params}/>
-                <Progress {...params} containerEl={root}/>
-                <Caret {...params} innerEl={inner}/>
             </div>
         </div>
     );

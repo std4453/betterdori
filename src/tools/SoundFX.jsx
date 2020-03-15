@@ -1,8 +1,8 @@
 import React from 'react';
 import { Howl } from 'howler';
 import { useEffect, useMemo } from 'react';
-import flickFX from './assets/flick.mp3';
-import tapFX from './assets/tap.mp3';
+import flickFX from '../assets/flick.mp3';
+import tapFX from '../assets/tap.mp3';
 
 function SoundFX({ music, time2Notes }) {
     const tap = useMemo(() => new Howl({ src: [tapFX] }), []);

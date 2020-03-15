@@ -35,7 +35,7 @@ function Caret({ time2Notes, music: { duration }, innerEl }) {
         const top = e.clientY - y;
         caretEl.style.top = `${top}px`;
         const time = (1 - top / height) * duration;
-        const notesCount = time2Notes.le(time).index;
+        const notesCount = time2Notes.le(time).index + 1;
         notesCounterEl.innerHTML = `${notesCount}`;
     }, [caretEl, innerEl, notesCounterEl, duration, time2Notes]);
     useEffect(() => {
