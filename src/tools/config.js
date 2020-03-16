@@ -6,6 +6,7 @@ import Progress from './Progress';
 import Caret from './Caret';
 import Markers from './Markers';
 import Placement from './Placement';
+import Divisions from './Divisions';
 
 const tools = [
     Player,
@@ -16,6 +17,7 @@ const tools = [
     Caret,
     Placement,
     Markers,
+    Divisions,
 ];
 
 export default tools;

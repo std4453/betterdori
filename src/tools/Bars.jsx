@@ -47,8 +47,10 @@ function Bars({ music: { duration }, ranges, settings: { division } }) {
         const bars = [];
         for (const { beat1, beat2, bpm, time1 } of ranges) {
             for (let beat = beat1; beat < beat2; beat += 1 / division) {
-                const time = time1 + (beat - beat1) / bpm * 60;
-                const major = ~~(beat - beat1) === beat - beat1;
+                const deltaBeat = beat - beat1;
+                const time = time1 + deltaBeat / bpm * 60;
+                // use epsilon to avoid round off errors
+                const major = Math.abs(Math.round(deltaBeat) - deltaBeat) < 1e-5;
                 bars.push(<div
                     key={time}
                     className={classNames(classes.bar, { [classes.major]: major })}

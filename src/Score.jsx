@@ -26,7 +26,7 @@ const useStyles = makeStyles({
     },
 });
 
-const settings = {
+const initialSettings = {
     // scale: 600,
     follow: false,
     progressOffset: 180,
@@ -111,6 +111,10 @@ function Score({ music }) {
 
     const [root, setRoot] = useState(null);
     const [inner, setInner] = useState(null);
+    const [division, setDivision] = useState(2);
+    const settings = useMemo(() => ({
+        ...initialSettings, division, setDivision,
+    }), [division]);
     const params = {
         music, timers, setTimers, notes, setNotes, markers, setMarkers,
         ranges, time2Timers, time2Notes, time2Markers, settings,
