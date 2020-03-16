@@ -11,7 +11,7 @@ import testScore from './assets/test_score.json';
 const useStyles = makeStyles({
     root: {
         position: 'relative',
-        width: 470,
+        width: '11em',
         fontSize: `${470 / 11}px`,
         height: '100%',
         backgroundColor: '#000000',
@@ -34,6 +34,8 @@ const settings = {
     scrollSpeed: 0.0012,
     scaleSpeed: 0.0003,
     initialScale: 600,
+    minScale: 50,
+    maxScale: 2000,
 };
 
 function Score({ music }) {
@@ -126,7 +128,9 @@ function Score({ music }) {
             const ratio = (e.clientY + root.scrollTop) / height;
             // scale changes on a proportional basis, a same scroll distance
             // results in a same proportion of scale change.
-            const newScale = scale * (1 - pixelY * settings.scaleSpeed);
+            let newScale = scale * (1 - pixelY * settings.scaleSpeed);
+            if (newScale < settings.minScale) newScale = settings.minScale;
+            if (newScale > settings.maxScale) newScale = settings.maxScale;
             const newHeight = newScale * music.duration;
             let newScroll = ratio * newHeight - e.clientY;
             // keep whole score in viewport
@@ -166,8 +170,17 @@ function Score({ music }) {
         root.scrollTop = height - window.innerHeight;
     }, [inner, root]);
 
+    const onContextMenu = useCallback((e) => {
+        e.preventDefault();
+        e.stopPropagation();
+    }, []);
+
     return (
-        <div ref={setRoot} className={classes.root} onWheel={onWheel}>
+        <div
+            ref={setRoot}
+            className={classes.root}
+            onWheel={onWheel}
+            onContextMenu={onContextMenu}>
             <div
                 ref={setInner}
                 style={{ height: music.duration * scale }}

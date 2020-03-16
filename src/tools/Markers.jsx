@@ -24,12 +24,16 @@ const useStyles = makeStyles({
 
 function Markers({ time2Markers, markers, setMarkers, music }) {
     const classes = useStyles();
-    const onClick = useCallback((event) => {
+    const onContextMenu = useCallback((event) => {
         const beat = event.target.getAttribute('data-beat');
         setMarkers(markers.remove(beat));
+    }, [markers, setMarkers]);
+    const onClick = useCallback((event) => {
+        const time = event.target.getAttribute('data-time');
+        music.currentTime = time;
         event.preventDefault();
         event.stopPropagation();
-    }, [markers, setMarkers]);
+    }, [music]);
     const markerEls = useMemo(() => {
         const res = [];
         time2Markers.forEach((time, { beat }) => {
@@ -41,11 +45,13 @@ function Markers({ time2Markers, markers, setMarkers, music }) {
                     src={marker}
                     alt="marker"
                     data-beat={beat}
-                    onContextMenu={onClick}/>
+                    data-time={time}
+                    onContextMenu={onContextMenu}
+                    onClick={onClick}/>
             ));
         });
         return res;
-    }, [time2Markers, music, classes, onClick]);
+    }, [time2Markers, classes, music, onContextMenu, onClick]);
     
     return (
         <div className={classes.root}>

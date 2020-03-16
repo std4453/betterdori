@@ -22,6 +22,9 @@ const useStyles = makeStyles({
             visibility: 'initial',
         },
     },
+    focusable: {
+        cursor: 'pointer',
+    },
     focus: {
         position: 'absolute',
         width: '1.4em',
@@ -30,6 +33,7 @@ const useStyles = makeStyles({
         top: '-0.2em',
         pointerEvents: 'none',
         visibility: 'hidden',
+        userSelect: 'none',
     },
     single: {
         backgroundColor: '#FFF',
@@ -83,7 +87,9 @@ function Note({ notes, setNotes, time, beat, duration, lane, note: type, flick, 
     const slide = type === 'Slide';
     const full = start || end;
 
-    const onContextMenu = useCallback((e) => {
+    const onContextMenu = useCallback(() => {
+        // delete note only works when in placement mode
+        if (!code.startsWith('placement/')) return;
         // if a note already exists with the same note and line, abandon placement
         for (const it = notes.ge(beat); it.valid && it.key === beat; it.next()) {
             if (it.value.lane === lane) {
@@ -91,9 +97,7 @@ function Note({ notes, setNotes, time, beat, duration, lane, note: type, flick, 
                 break;
             }
         }
-        e.preventDefault();
-        e.stopPropagation();
-    }, [beat, lane, notes, setNotes]);
+    }, [beat, code, lane, notes, setNotes]);
 
     return (
         <div
@@ -102,6 +106,7 @@ function Note({ notes, setNotes, time, beat, duration, lane, note: type, flick, 
                 [classes.slide]: slide && full && !flick,
                 [classes.flick]: flick,
                 [classes.middle]: slide && !full,
+                [classes.focusable]: code.startsWith('placement/'),
             })}
             style={{
                 bottom: `${time / duration * 100}%`,
@@ -126,7 +131,11 @@ function Notes({ time2Notes, music: { duration }, notes, setNotes }) {
             time2Notes.forEach((time, { note, pos: notePos, lane, end }) => {
                 if (note !== 'Slide' || pos !== notePos) return;
                 if (lastLane !== -1) {
-                    res.push(<Snake x0={lastLane} x1={lane} y0={lastY} y1={time / duration}/>);
+                    const y1 = time / duration;
+                    res.push(<Snake
+                        key={`snake-${lastY}-${y1}-${pos}`}
+                        x0={lastLane} x1={lane}
+                        y0={lastY} y1={y1}/>);
                 }
                 lastLane = end ? -1 : lane;
                 lastY = time / duration;
@@ -149,6 +158,7 @@ function Notes({ time2Notes, music: { duration }, notes, setNotes }) {
 
             if (minLane < maxLane - 1) { // at least two notes, distance >= 2, display sync tap line
                 res.push(<div
+                    key={`tap-line-${time}`}
                     className={classes.tapLine}
                     style={{
                         bottom: `${time / duration * 100}%`,
@@ -161,6 +171,7 @@ function Notes({ time2Notes, music: { duration }, notes, setNotes }) {
 
         time2Notes.forEach((time, note) => {
             res.push(<Note
+                key={`note-${note.beat}-${note.lane}`}
                 time={time}
                 duration={duration}
                 notes={notes}

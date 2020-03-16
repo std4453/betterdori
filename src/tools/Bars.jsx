@@ -8,7 +8,7 @@ const useStyles = makeStyles({
         height: '100%',
         width: `${7 / 11 * 100}%`,
         left: `${2 / 11 * 100}%`,
-        opacity: 0.4,
+        opacity: 0.5,
     },
     lanes: {
         position: 'absolute',
@@ -34,7 +34,7 @@ const useStyles = makeStyles({
         position: 'absolute',
         left: 0,
         width: '100%',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.4)',
+        borderBottom: '1px dashed rgba(255, 255, 255, 0.6)',
     },
     major: {
         borderBottom: '1px solid #FFF',
