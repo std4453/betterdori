@@ -1,9 +1,10 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback, useEffect } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import createTree from 'functional-red-black-tree';
 
 import { Tools } from './tools/Tool';
 import tools from './tools/config';
+import { normalizeWheel } from './tools/utils';
 
 import testScore from './assets/test_score.json';
 
@@ -14,7 +15,7 @@ const useStyles = makeStyles({
         fontSize: `${470 / 11}px`,
         height: '100%',
         backgroundColor: '#000000',
-        overflow: 'auto',
+        overflow: 'hidden',
     },
     inner: {
         position: 'absolute',
@@ -26,10 +27,13 @@ const useStyles = makeStyles({
 });
 
 const settings = {
-    scale: 600,
+    // scale: 600,
     follow: false,
     progressOffset: 180,
     division: 2,
+    scrollSpeed: 0.0012,
+    scaleSpeed: 0.0003,
+    initialScale: 600,
 };
 
 function Score({ music }) {
@@ -111,11 +115,62 @@ function Score({ music }) {
         containerEl: root, innerEl: inner,
     };
 
+    // scale = pixels per second
+    const [scale, setScale] = useState(settings.initialScale);
+    const onWheel = useCallback((e) => {
+        if (!root) return;
+        const { pixelY } = normalizeWheel(e.nativeEvent);
+        if (e.ctrlKey) { // scaling
+            const height = scale * music.duration;
+            // scaling keeps the cursor unmoved, that is, 
+            const ratio = (e.clientY + root.scrollTop) / height;
+            // scale changes on a proportional basis, a same scroll distance
+            // results in a same proportion of scale change.
+            const newScale = scale * (1 - pixelY * settings.scaleSpeed);
+            const newHeight = newScale * music.duration;
+            let newScroll = ratio * newHeight - e.clientY;
+            // keep whole score in viewport
+            if (newScroll < 0) newScroll = 0;
+            if (newScroll + window.innerHeight > newHeight) newScroll = newHeight - window.innerHeight;
+            root.scrollTop = newScroll;
+            setScale(newScale);
+        } else {
+            const height = scale * music.duration;
+            // scroll changes proportional to scale, a same scroll distance
+            // results in a same scroll change measured in *beats*. 
+            let newScroll = root.scrollTop + pixelY * settings.scrollSpeed * scale;
+            // keep whole score in viewport
+            if (newScroll < 0) newScroll = 0;
+            if (newScroll + window.innerHeight > height) newScroll = height - window.innerHeight;
+            root.scrollTop = newScroll;
+        }
+    }, [root, scale, music]);
+    // prevent default ctrl+wheel zoom, for details about the { passive: false } option
+    // in addEventListener, see https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener
+    useEffect(() => {
+        const prevent = (e) => {
+            if (!e.ctrlKey) return;
+            e.stopPropagation();
+            e.preventDefault();
+            return false;
+        };
+        window.addEventListener('wheel', prevent, { passive: false });
+        return () => window.removeEventListener('wheel', prevent);
+    }, []);
+
+    // jump to scroll bottom initially, use getBoundingClientRect() so that this
+    // will run only once, upon mounting (instead of every time scale changes).
+    useEffect(() => {
+        if (!inner || !root) return;
+        const { height } = inner.getBoundingClientRect();
+        root.scrollTop = height - window.innerHeight;
+    }, [inner, root]);
+
     return (
-        <div ref={setRoot} className={classes.root}>
+        <div ref={setRoot} className={classes.root} onWheel={onWheel}>
             <div
                 ref={setInner}
-                style={{ height: music.duration * settings.scale }}
+                style={{ height: music.duration * scale }}
                 className={classes.inner}>
                 <Tools>
                     {tools.map((Component, i) => (

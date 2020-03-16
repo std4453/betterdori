@@ -13,25 +13,28 @@ const useStyles = makeStyles({
     },
 });
 
-function Progress({ music, containerEl, innerEl, settings: { follow, scale, progressOffset } }) {
+function Progress({ music, containerEl, innerEl, settings: { follow, progressOffset } }) {
     const classes = useStyles();
 
     const [progressEl, setProgressEl] = useState(null);
     const updateProgress = useCallback((noscroll = false) => {
-        if (!progressEl) return;
+        if (!progressEl || !innerEl) return;
 
-        const height = music.duration * scale;
+        // use getBoundingClientRect so that the dimensions do not rely on scale
+        const height = innerEl.getBoundingClientRect().height;
         const progress = music.currentTime / music.duration;
-        const caretPosition = (1 - progress) * height;
+        const progressPosition = (1 - progress) * height;
     
-        let viewTop = caretPosition + progressOffset - window.innerHeight;
-        // keep caret in view, but not exceeding score boundaries
+        let viewTop = progressPosition + progressOffset - window.innerHeight;
+        // keep progress in view, but not exceeding score boundaries
         if (viewTop < 0) viewTop = 0;
-        else if (caretPosition + progressOffset > height) viewTop = height - window.innerHeight;
+        else if (progressPosition + progressOffset > height) viewTop = height - window.innerHeight;
         if (follow && !noscroll && containerEl) containerEl.scrollTop = viewTop;
 
-        progressEl.style.top = `${caretPosition}px`;
-    }, [containerEl, progressEl, music, follow, scale, progressOffset]);
+        // percentage keeps the progress position unchanged upon scaling
+        const progressRatio = progressPosition / height;
+        progressEl.style.top = `${progressRatio * 100}%`;
+    }, [progressEl, innerEl, music, progressOffset, follow, containerEl]);
     useEffect(() => {
         let valid = true;
         const onFrameWrapped = () => {

@@ -34,9 +34,10 @@ function Caret({ time2Notes, music: { duration }, innerEl }) {
     const updateCaret = useCallback((e) => {
         if (!caretEl || !innerEl || !notesCounterEl) return;
         const { y, height } = innerEl.getBoundingClientRect();
-        const top = e.clientY - y;
-        caretEl.style.top = `${top}px`;
-        const time = (1 - top / height) * duration;
+        // percentage keeps the progress position unchanged upon scaling
+        const top = (e.clientY - y) / height;
+        caretEl.style.top = `${top * 100}%`;
+        const time = (1 - top) * duration;
         const { valid, index } = time2Notes.le(time);
         // an invalid iterator with index = size - 1 is returned if the
         // key is smaller than the smallest key. index + 1 since we want to
