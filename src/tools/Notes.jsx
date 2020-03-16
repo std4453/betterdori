@@ -1,7 +1,9 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useContext, useCallback } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import classNames from 'classnames';
 import Snake from './Snake';
+import focus from '../assets/focus.svg';
+import { ToolContext } from './Tool';
 
 const useStyles = makeStyles({
     root: {
@@ -16,14 +18,29 @@ const useStyles = makeStyles({
         borderRadius: '50%',
         position: 'absolute',
         marginBottom: '-0.5em',
+        '&:hover $focus': {
+            visibility: 'initial',
+        },
+    },
+    focus: {
+        position: 'absolute',
+        width: '1.4em',
+        height: '1.4em',
+        left: '-0.2em',
+        top: '-0.2em',
+        pointerEvents: 'none',
+        visibility: 'hidden',
     },
     single: {
+        cursor: 'pointer',
         backgroundColor: '#FFF',
     },
     slide: {
+        cursor: 'pointer',
         backgroundColor: '#7ADEAE',
     },
     flick: {
+        cursor: 'pointer',
         backgroundColor: '#FFA0E8',
         '&:after': {
             content: '\'\'',
@@ -56,7 +73,48 @@ const useStyles = makeStyles({
     },
 });
 
-function Notes({ time2Notes, music: { duration } }) {
+function Note({ notes, setNotes, time, beat, duration, lane, note: type, flick, start, end }) {
+    const classes = useStyles();
+    const { code } = useContext(ToolContext);
+
+    const single = type === 'Single';
+    const slide = type === 'Slide';
+    const full = start || end;
+
+    const onContextMenu = useCallback((e) => {
+        // if a note already exists with the same note and line, abandon placement
+        for (const it = notes.ge(beat); it.valid && it.key === beat; it.next()) {
+            if (it.value.lane === lane) {
+                setNotes(it.remove());
+                break;
+            }
+        }
+        e.preventDefault();
+        e.stopPropagation();
+    }, [beat, lane, notes, setNotes]);
+
+    return (
+        <div
+            className={classNames(classes.note, {
+                [classes.single]: single && !flick,
+                [classes.slide]: slide && full && !flick,
+                [classes.flick]: flick,
+                [classes.middle]: slide && !full,
+            })}
+            style={{
+                bottom: `${time / duration * 100}%`,
+                left: `${lane / 7 * 100}%`,
+            }}
+            onContextMenu={onContextMenu}>
+            {code === 'single' && (!slide || full) && <img
+                className={classes.focus}
+                alt="focus"
+                src={focus}/>}
+        </div>
+    );
+}
+
+function Notes({ time2Notes, music: { duration }, notes, setNotes }) {
     const classes = useStyles();
     const children = useMemo(() => {
         const res = [];
@@ -99,19 +157,13 @@ function Notes({ time2Notes, music: { duration } }) {
             }
         }
 
-        time2Notes.forEach((time, { lane, note: type, flick, start, end }) => {
-            res.push(<div
-                className={classNames(classes.note, {
-                    [classes.single]: type === 'Single' && !flick,
-                    [classes.slide]: type === 'Slide' && (start || end) && !flick,
-                    [classes.flick]: flick,
-                    [classes.middle]: type === 'Slide' && !(start || end),
-                })}
-                style={{
-                    bottom: `${time / duration * 100}%`,
-                    left: `${lane / 7 * 100}%`,
-                }}
-            />)
+        time2Notes.forEach((time, note) => {
+            res.push(<Note
+                time={time}
+                duration={duration}
+                notes={notes}
+                setNotes={setNotes}
+                {...note}/>);
         });
 
         return res;

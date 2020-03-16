@@ -10,6 +10,7 @@ const useStyles = makeStyles({
         height: 0,
         borderBottom: '3px solid #5996FF',
         marginTop: -1.5,
+        pointerEvents: 'none',
     },
     notesCounter: {
         position: 'absolute',
