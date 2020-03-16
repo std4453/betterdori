@@ -1,12 +1,11 @@
-import React, { useMemo, useState, useCallback, useEffect } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import createTree from 'functional-red-black-tree';
-
-import { Tools } from './tools/Tool';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import testScore from './assets/test_score.json';
 import tools from './tools/config';
 import { normalizeWheel } from './tools/utils';
 
-import testScore from './assets/test_score.json';
+
 
 const useStyles = makeStyles({
     root: {
@@ -152,7 +151,7 @@ function Score({ music }) {
             if (newScroll + window.innerHeight > height) newScroll = height - window.innerHeight;
             root.scrollTop = newScroll;
         }
-    }, [root, scale, music]);
+    }, [root, scale, music, settings]);
     // prevent default ctrl+wheel zoom, for details about the { passive: false } option
     // in addEventListener, see https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener
     useEffect(() => {
@@ -189,11 +188,9 @@ function Score({ music }) {
                 ref={setInner}
                 style={{ height: music.duration * scale }}
                 className={classes.inner}>
-                <Tools>
-                    {tools.map((Component, i) => (
-                        <Component key={i} {...params}/>
-                    ))}
-                </Tools>
+                {tools.map((Component, i) => (
+                    <Component key={i} {...params}/>
+                ))}
             </div>
         </div>
     );

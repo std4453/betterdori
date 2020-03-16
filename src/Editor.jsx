@@ -2,6 +2,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import Score from './Score';
 import test_music from './assets/test_music.mp3';
+import { Tools } from './tools/Tool';
+import Toolbar from './ui/Toolbar';
 
 const useStyles = makeStyles({
     root: {
@@ -25,7 +27,10 @@ function Editor() {
 
     return (
         <div className={classes.root}>
-            {initialized && <Score music={music}/>}
+            <Tools>
+                {initialized && <Score music={music}/>}
+                <Toolbar/>
+            </Tools>
         </div>
     );
 };
