@@ -32,15 +32,12 @@ const useStyles = makeStyles({
         visibility: 'hidden',
     },
     single: {
-        cursor: 'pointer',
         backgroundColor: '#FFF',
     },
     slide: {
-        cursor: 'pointer',
         backgroundColor: '#7ADEAE',
     },
     flick: {
-        cursor: 'pointer',
         backgroundColor: '#FFA0E8',
         '&:after': {
             content: '\'\'',
@@ -58,10 +55,15 @@ const useStyles = makeStyles({
         },
     },
     middle: {
-        height: 0,
-        borderRadius: 'unset',
-        borderBottom: '3px solid #7ADEAE',
-        marginBottom: -1.5,
+        '&:after': {
+            content: '\'\'',
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: '50%',
+            borderBottom: '3px solid #7ADEAE',
+            marginBottom: -1.5,
+        },
     },
     tapLine: {
         position: 'absolute',
@@ -106,7 +108,7 @@ function Note({ notes, setNotes, time, beat, duration, lane, note: type, flick, 
                 left: `${lane / 7 * 100}%`,
             }}
             onContextMenu={onContextMenu}>
-            {code === 'single' && (!slide || full) && <img
+            {code.startsWith('placement/') && <img
                 className={classes.focus}
                 alt="focus"
                 src={focus}/>}
@@ -167,7 +169,7 @@ function Notes({ time2Notes, music: { duration }, notes, setNotes }) {
         });
 
         return res;
-    }, [time2Notes, duration, classes]);
+    }, [time2Notes, duration, classes, notes, setNotes]);
     return (
         <div className={classes.root}>
             {children}
