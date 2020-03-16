@@ -41,21 +41,22 @@ function Progress({ music, containerEl, innerEl, settings: { follow, scale, prog
         requestAnimationFrame(onFrameWrapped);
         return () => { valid = false; };
     }, [music, updateProgress]);
-
+    
+    const { code } = useContext(ToolContext);
     const seekProgress = useCallback((e) => {
-        if (!innerEl) return;
+        if (!innerEl || code !== 'player') return;
         const { y, height } = innerEl.getBoundingClientRect();
         const top = e.clientY - y;
         music.currentTime = (1 - top / height) * music.duration;
         updateProgress(true);
-    }, [innerEl, music, updateProgress]);
+        if (music.paused) music.play();
+    }, [innerEl, music, updateProgress, code]);
     useEffect(() => {
         if (!innerEl) return;
         innerEl.addEventListener('click', seekProgress);
         return () => innerEl.removeEventListener('click', seekProgress);
     }, [innerEl, seekProgress]);
-
-    const { code } = useContext(ToolContext);
+    
     useEffect(updateProgress, [updateProgress, code]);
     return code === 'player' && (
         <div ref={setProgressEl} className={classes.root}/>

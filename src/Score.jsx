@@ -27,11 +27,10 @@ const useStyles = makeStyles({
 
 const settings = {
     scale: 600,
-    follow: true,
+    follow: false,
     progressOffset: 180,
     division: 2,
 };
-
 
 function Score({ music }) {
     const classes = useStyles();

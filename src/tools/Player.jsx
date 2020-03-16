@@ -20,7 +20,7 @@ function Player({ music, time2Timers, markers, setMarkers, settings: { division 
     }, [division, markers, music, setMarkers, time2Timers]);
     const setMyCode = useCallback(() => setCode('player'), [setCode]);
     return <>
-        <KeyboardEventHandler handleKeys={['c']} onKeyEvent={setMyCode}/>
+        <KeyboardEventHandler handleKeys={['r']} onKeyEvent={setMyCode}/>
         <KeyboardEventHandler isDisabled={code !== 'player'} handleKeys={['space']} onKeyEvent={onSpace}/>
         <KeyboardEventHandler isDisabled={code !== 'player'} handleKeys={['e']} onKeyEvent={onMarker}/>
     </>;
