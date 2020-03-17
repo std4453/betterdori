@@ -1,4 +1,4 @@
-import React, { useContext, useCallback } from 'react';
+import React, { useContext, useCallback, Children } from 'react';
 import { ToolContext } from '../tools/Tool';
 import Button from './Button';
 import { makeStyles } from '@material-ui/styles';
@@ -16,15 +16,17 @@ const useStyles = makeStyles({
     },
 });
 
-function Control({ code: selectCode, children, ...rest }) {
+function Control({ code: selectCode, children, index, ...rest }) {
     const classes = useStyles();
     const { code, setCode } = useContext(ToolContext);
     const onClick = useCallback(() => setCode(selectCode), [selectCode, setCode]);
     const selected = code === selectCode;
+    const childrenCount = Children.count(children);
+    const margin = Math.min(childrenCount - 1, index);
     return (
         <div className={classes.root}>
             <Button onClick={onClick} selected={selected} {...rest}/>
-            {selected && <div className={classes.container}>
+            {selected && <div className={classes.container} style={{ top: `${-2 * margin}em` }}>
                 <Toolbar>
                     {children}
                 </Toolbar>

@@ -4,6 +4,7 @@ import Control from './Control';
 import Toolbar from './Toolbar';
 import Carousel from './Carousel';
 import Switch from './Switch';
+import Button from './Button';
 
 import select from '../assets/select.svg';
 import single from '../assets/single.svg';
@@ -19,6 +20,13 @@ import x10 from '../assets/x10.svg';
 import x15 from '../assets/x15.svg';
 import x20 from '../assets/x20.svg';
 import followIcon from '../assets/follow.svg';
+import bars from '../assets/bars.svg';
+import d1 from '../assets/d1.svg';
+import d2 from '../assets/d2.svg';
+import d3 from '../assets/d3.svg';
+import d4 from '../assets/d4.svg';
+import d6 from '../assets/d6.svg';
+import d8 from '../assets/d8.svg';
 
 const useStyles = makeStyles({
     root: {
@@ -27,7 +35,7 @@ const useStyles = makeStyles({
     },
 });
 
-function Controls({ music, settings: { follow, setFollow } }) {
+function Controls({ music, settings: { follow, setFollow, division, setDivision } }) {
     const classes = useStyles();
     const [paused, setPausedRaw] = useState(music.paused);
     const setPaused = useCallback((paused) => {
@@ -52,16 +60,30 @@ function Controls({ music, settings: { follow, setFollow } }) {
         music.addEventListener('ratechange', updatePlaybackRate);
         return () => music.removeEventListener('ratechange', updatePlaybackRate);
     })
+    const setD1 = useCallback(() => setDivision(1), [setDivision]);
+    const setD2 = useCallback(() => setDivision(2), [setDivision]);
+    const setD3 = useCallback(() => setDivision(3), [setDivision]);
+    const setD4 = useCallback(() => setDivision(4), [setDivision]);
+    const setD6 = useCallback(() => setDivision(6), [setDivision]);
+    const setD8 = useCallback(() => setDivision(8), [setDivision]);
     return (
         <div className={classes.root}>
             <Toolbar>
-                <Control code="select" icon={select}/>
-                <Control code="placement/single" icon={single}/>
-                <Control code="placement/slide-a" icon={slide1}/>
-                <Control code="placement/slide-b" icon={slide2}/>
-                <Control code="modification/flick" icon={flick}/>
-                <Control code="timer" icon={timer}/>
-                <Control code="player" icon={player}>
+                <Control index={0} code="select" icon={select}/>
+                <Control index={2} code="placement/single" icon={single}/>
+                <Control index={3} code="placement/slide-a" icon={slide1}/>
+                <Control index={4} code="placement/slide-b" icon={slide2}/>
+                <Control index={5} code="modification/flick" icon={flick}/>
+                <Control index={6} code="timer" icon={timer}/>
+                <Control index={7} code="bars" icon={bars}>
+                    <Button onClick={setD1} icon={d1}/>
+                    <Button onClick={setD2} icon={d2}/>
+                    <Button onClick={setD3} icon={d3}/>
+                    <Button onClick={setD4} icon={d4}/>
+                    <Button onClick={setD6} icon={d6}/>
+                    <Button onClick={setD8} icon={d8}/>
+                </Control>
+                <Control index={8} code="player" icon={player}>
                     <Carousel
                         state={paused}
                         setState={setPaused}
