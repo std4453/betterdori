@@ -1,4 +1,4 @@
-import React, { useMemo, useContext, useCallback } from 'react';
+import React, { useMemo, useContext } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import classNames from 'classnames';
 import Snake from './Snake';
@@ -79,25 +79,13 @@ const useStyles = makeStyles({
     },
 });
 
-function Note({ notes, setNotes, time, beat, duration, lane, note: type, flick, start, end }) {
+function Note({ time, duration, lane, note: type, flick, start, end }) {
     const classes = useStyles();
     const { code } = useContext(ToolContext);
 
     const single = type === 'Single';
     const slide = type === 'Slide';
     const full = start || end;
-
-    const onContextMenu = useCallback(() => {
-        // delete note only works when in placement mode
-        if (!code.startsWith('placement/')) return;
-        // if a note already exists with the same note and line, abandon placement
-        for (const it = notes.ge(beat); it.valid && it.key === beat; it.next()) {
-            if (it.value.lane === lane) {
-                setNotes(it.remove());
-                break;
-            }
-        }
-    }, [beat, code, lane, notes, setNotes]);
 
     return (
         <div
@@ -111,8 +99,7 @@ function Note({ notes, setNotes, time, beat, duration, lane, note: type, flick, 
             style={{
                 bottom: `${time / duration * 100}%`,
                 left: `${lane / 7 * 100}%`,
-            }}
-            onContextMenu={onContextMenu}>
+            }}>
             {code.startsWith('placement/') && <img
                 className={classes.focus}
                 alt="focus"

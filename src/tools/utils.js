@@ -8,7 +8,7 @@ const quantize = (time, time2Timers, division) => {
     // of the next range instead
     if (quantizedBeat > rangeEndBeat) quantizedBeat = rangeEndBeat;
     const quantizedTime = rangeStartTime + (quantizedBeat - rangeStartBeat) / bpm * 60;
-    return { beat: quantizedBeat, time: quantizedTime };
+    return { beat: quantizedBeat, time: quantizedTime, bpm };
 };
 
 // scroll speed normalizer from https://stackoverflow.com/a/30134826/3871776
