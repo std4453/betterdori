@@ -32,8 +32,8 @@ const initialSettings = {
 
     // other settings
     progressOffset: 180,
-    scrollSpeed: 0.0012,
-    scaleSpeed: 0.0003,
+    scrollSpeed: 0.03,
+    scaleSpeed: 0.0005,
     minScale: 50,
     maxScale: 2000,
 };
@@ -148,7 +148,7 @@ function Score({ music }) {
             const height = scale * music.duration;
             // scroll changes proportional to scale, a same scroll distance
             // results in a same scroll change measured in *beats*. 
-            let newScroll = root.scrollTop + pixelY * settings.scrollSpeed * scale;
+            let newScroll = root.scrollTop + pixelY * settings.scrollSpeed * Math.sqrt(scale);
             // keep whole score in viewport
             if (newScroll < 0) newScroll = 0;
             if (newScroll + window.innerHeight > height) newScroll = height - window.innerHeight;
