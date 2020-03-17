@@ -69,21 +69,21 @@ function Controls({ music, settings: { follow, setFollow, division, setDivision 
     return (
         <div className={classes.root}>
             <Toolbar>
-                <Control index={0} code="select" icon={select}/>
-                <Control index={2} code="placement/single" icon={single}/>
-                <Control index={3} code="placement/slide-a" icon={slide1}/>
-                <Control index={4} code="placement/slide-b" icon={slide2}/>
-                <Control index={5} code="modification/flick" icon={flick}/>
-                <Control index={6} code="timer" icon={timer}/>
+                <Control alt="E" index={0} code="select" icon={select}/>
+                <Control alt="F" index={2} code="placement/single" icon={single}/>
+                <Control alt="S" index={3} code="placement/slide-a" icon={slide1}/>
+                <Control alt="D" index={4} code="placement/slide-b" icon={slide2}/>
+                <Control alt="W" index={5} code="modification/flick" icon={flick}/>
+                <Control alt="A" index={6} code="timer" icon={timer}/>
                 <Control index={7} code="bars" icon={bars}>
-                    <Button onClick={setD1} icon={d1}/>
-                    <Button onClick={setD2} icon={d2}/>
-                    <Button onClick={setD3} icon={d3}/>
-                    <Button onClick={setD4} icon={d4}/>
-                    <Button onClick={setD6} icon={d6}/>
-                    <Button onClick={setD8} icon={d8}/>
+                    <Button alt="1" onClick={setD1} icon={d1}/>
+                    <Button alt="2" onClick={setD2} icon={d2}/>
+                    <Button alt="3" onClick={setD3} icon={d3}/>
+                    <Button alt="4" onClick={setD4} icon={d4}/>
+                    <Button alt="6" onClick={setD6} icon={d6}/>
+                    <Button alt="8" onClick={setD8} icon={d8}/>
                 </Control>
-                <Control index={8} code="player" icon={player}>
+                <Control alt="R" index={8} code="player" icon={player}>
                     <Carousel
                         state={paused}
                         setState={setPaused}
