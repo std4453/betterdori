@@ -7,10 +7,12 @@ import Caret from './Caret';
 import Markers from './Markers';
 import Placement from './Placement';
 import Divisions from './Divisions';
+import Caret2 from './Caret2';
 
 const tools = [
     Player,
     Bars,
+    Caret2,
     Notes,
     SoundFX,
     Progress,
