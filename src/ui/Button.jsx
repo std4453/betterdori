@@ -7,17 +7,27 @@ const useStyles = makeStyles({
         width: '2em',
         height: '2em',
         cursor: 'pointer',
-        '&:hover $icon': {
-            transform: 'scale(1.1)',
-        },
         userSelect: 'none',
+        position: 'relative',
+        '&:after': {
+            content: '\'\'',
+            position: 'absolute',
+            pointerEvents: 'none',
+            left: 0,
+            top: 0,
+            right: 0,
+            bottom: 0,
+            border: '0px solid black',
+        },
+        '&:hover:after': {
+            borderWidth: 5,
+        },
     },
     selected: {
         backgroundColor: 'rgba(0, 0, 0, 0.06)',
     },
     icon: {
         pointerEvents: 'none',
-        transition: 'transform 70ms ease-in-out',
     },
 });
 

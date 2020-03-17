@@ -17,7 +17,7 @@ function Switch({ state, setState, icon }) {
             onClick={onClick}
             selected={false}
             icon={icon}
-            classes={{ root: classNames({ [classes.nonactive]: !state }) }}/>
+            classes={{ icon: classNames({ [classes.nonactive]: !state }) }}/>
     );
 }
 
