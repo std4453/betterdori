@@ -1,4 +1,4 @@
-import React, { useMemo, useContext } from 'react';
+import React, { useMemo, useContext, useCallback } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import classNames from 'classnames';
 import Snake from './Snake';
@@ -79,13 +79,26 @@ const useStyles = makeStyles({
     },
 });
 
-function Note({ time, duration, lane, note: type, flick, start, end }) {
+function Note({ notes, setNotes, beat, time, duration, lane, note: type, flick, start, end }) {
     const classes = useStyles();
     const { code } = useContext(ToolContext);
 
     const single = type === 'Single';
     const slide = type === 'Slide';
     const full = start || end;
+
+    const onClick = useCallback(() => {
+        if (code !== 'modification/flick') return;
+        if (single || (slide && full)) {
+            for (const it = notes.ge(beat); it.valid && it.key === beat; it.next()) {
+                if (it.value.lane !== lane) continue;
+                setNotes(it.update({
+                    ...it.value, flick: !flick,
+                }));
+                break;
+            }
+        }
+    }, [beat, code, flick, full, lane, notes, setNotes, single, slide]);
 
     return (
         <div
@@ -94,13 +107,14 @@ function Note({ time, duration, lane, note: type, flick, start, end }) {
                 [classes.slide]: slide && full && !flick,
                 [classes.flick]: flick,
                 [classes.middle]: slide && !full,
-                [classes.focusable]: code.startsWith('placement/'),
+                [classes.focusable]: code.startsWith('placement/') || code.startsWith('modification/'),
             })}
             style={{
                 bottom: `${time / duration * 100}%`,
                 left: `${lane / 7 * 100}%`,
-            }}>
-            {code.startsWith('placement/') && <img
+            }}
+            onClick={onClick}>
+            {(code.startsWith('placement/') || code.startsWith('modification/')) && <img
                 className={classes.focus}
                 alt="focus"
                 src={focus}/>}

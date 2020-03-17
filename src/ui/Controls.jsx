@@ -59,7 +59,7 @@ function Controls({ music, settings: { follow, setFollow } }) {
                 <Control code="placement/single" icon={single}/>
                 <Control code="placement/slide-a" icon={slide1}/>
                 <Control code="placement/slide-b" icon={slide2}/>
-                <Control code="flick" icon={flick}/>
+                <Control code="modification/flick" icon={flick}/>
                 <Control code="timer" icon={timer}/>
                 <Control code="player" icon={player}>
                     <Carousel

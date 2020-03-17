@@ -47,7 +47,7 @@ function Caret2({ time2Timers, music: { duration }, innerEl, settings: { divisio
         return () => innerEl.removeEventListener('mousemove', updateCaret);
     }, [innerEl, updateCaret]);
 
-    return code.startsWith('placement/') && (
+    return (code.startsWith('placement/') || code.startsWith('modification/')) && (
         <div ref={setCaretEl} className={classes.root}>
             <div ref={setNotesCounterEl} className={classes.notesCounter}/>
         </div>
