@@ -4,8 +4,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import testScore from './assets/test_score.json';
 import tools from './tools/config';
 import { normalizeWheel } from './tools/utils';
-
-
+import Controls from './ui/Controls';
 
 const useStyles = makeStyles({
     root: {
@@ -26,13 +25,15 @@ const useStyles = makeStyles({
 });
 
 const initialSettings = {
-    // scale: 600,
+    // initial values
     follow: false,
-    progressOffset: 180,
     division: 2,
+    scale: 600,
+
+    // other settings
+    progressOffset: 180,
     scrollSpeed: 0.0012,
     scaleSpeed: 0.0003,
-    initialScale: 600,
     minScale: 50,
     maxScale: 2000,
 };
@@ -108,12 +109,14 @@ function Score({ music }) {
         return res;
     }, [ranges, markers]);
 
+    const [division, setDivision] = useState(initialSettings.division);
+    const [follow, setFollow] = useState(initialSettings.follow);
+
     const [root, setRoot] = useState(null);
     const [inner, setInner] = useState(null);
-    const [division, setDivision] = useState(2);
     const settings = useMemo(() => ({
-        ...initialSettings, division, setDivision,
-    }), [division]);
+        ...initialSettings, division, setDivision, follow, setFollow,
+    }), [division, follow]);
     const params = {
         music, timers, setTimers, notes, setNotes, markers, setMarkers,
         ranges, time2Timers, time2Notes, time2Markers, settings,
@@ -121,7 +124,7 @@ function Score({ music }) {
     };
 
     // scale = pixels per second
-    const [scale, setScale] = useState(settings.initialScale);
+    const [scale, setScale] = useState(initialSettings.scale);
     const onWheel = useCallback((e) => {
         if (!root) return;
         const { pixelY } = normalizeWheel(e.nativeEvent);
@@ -178,7 +181,7 @@ function Score({ music }) {
         e.stopPropagation();
     }, []);
 
-    return (
+    return <>
         <div
             ref={setRoot}
             className={classes.root}
@@ -193,7 +196,8 @@ function Score({ music }) {
                 ))}
             </div>
         </div>
-    );
+        <Controls {...params}/>
+    </>;
 };
 
 export default Score;

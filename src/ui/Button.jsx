@@ -1,7 +1,6 @@
-import React, { useContext, useCallback } from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/styles';
 import classNames from 'classnames';
-import { ToolContext } from '../tools/Tool';
 
 const useStyles = makeStyles({
     root: {
@@ -11,6 +10,7 @@ const useStyles = makeStyles({
         '&:hover $icon': {
             transform: 'scale(1.1)',
         },
+        userSelect: 'none',
     },
     selected: {
         backgroundColor: 'rgba(0, 0, 0, 0.06)',
@@ -18,19 +18,16 @@ const useStyles = makeStyles({
     icon: {
         pointerEvents: 'none',
         transition: 'transform 70ms ease-in-out',
-        // transform: 'scale(1.0)',
     },
 });
 
-function Button({ code: selectCode, icon }) {
-    const classes = useStyles();
-    const { code, setCode } = useContext(ToolContext);
-    const onClick = useCallback(() => setCode(selectCode), [setCode, selectCode]);
+function Button({ selected, onClick, icon, ...props }) {
+    const classes = useStyles(props);
     return (
         <div
-            className={classNames(classes.root, { [classes.selected]: code === selectCode })}
+            className={classNames(classes.root, { [classes.selected]: selected })}
             onClick={onClick}>
-            <img src={icon} alt={code} className={classes.icon}/>
+            <img src={icon} alt="" className={classes.icon}/>
         </div>
     );
 }
