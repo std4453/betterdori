@@ -1,6 +1,6 @@
 import { makeStyles } from '@material-ui/styles';
 import classNames from 'classnames';
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import focus from '../assets/focus.svg';
 
 const useStyles = makeStyles({
@@ -18,6 +18,9 @@ const useStyles = makeStyles({
         marginBottom: '-0.5em',
         '&$focusable:hover $focus': {
             visibility: 'initial',
+        },
+        '&$thumb': {
+            transform: 'scale(0.5)',
         },
     },
     focusable: {
@@ -55,6 +58,9 @@ const useStyles = makeStyles({
             marginLeft: `-${10 / 60}em`,
             marginTop: `-${16.739 / 60 / 2}em`,
         },
+        '&$thumb:after': {
+            visibility: 'hidden',
+        },
     },
     middle: {
         '&:after': {
@@ -65,6 +71,9 @@ const useStyles = makeStyles({
             bottom: '50%',
             borderBottom: '3px solid #7ADEAE',
             marginBottom: -1.5,
+        },
+        '&$thumb:after': {
+            opacity: 0.6,
         },
     },
     tapLine: {
@@ -81,15 +90,16 @@ const useStyles = makeStyles({
         right: 0,
         display: 'flex',
     },
+    thumb: {},
 });
 
-function Note({ time, duration, lane, note: type, flick, start, end, code }) {
+function Note({ time, duration, lane, note: type, flick, start, end, code, thumb }) {
     const classes = useStyles();
 
     const single = type === 'Single';
     const slide = type === 'Slide';
     const full = start || end;
-    const focusable = code.startsWith('placement/') || code.startsWith('modification/');
+    const focusable = !thumb && (code.startsWith('placement/') || code.startsWith('modification/'));
 
     return (
         <div
@@ -99,6 +109,7 @@ function Note({ time, duration, lane, note: type, flick, start, end, code }) {
                 [classes.flick]: flick,
                 [classes.middle]: slide && !full,
                 [classes.focusable]: focusable,
+                [classes.thumb]: thumb,
             })}
             style={{
                 bottom: `${time / duration * 100}%`,
@@ -112,31 +123,34 @@ function Note({ time, duration, lane, note: type, flick, start, end, code }) {
     );
 }
 
-function Snake({ x0, x1, y0, y1 }) {
+function Snake({ x0, x1, y0, y1, thumb }) {
     const classes = useStyles();
-    return <div
-        className={classes.snake}
-        style={{
-            bottom: `${y0 * 100}%`,
-            top: `${(1 - y1) * 100}%`,
-        }}>
-        <svg width="100%" height="100%" viewBox="0 0 7 1" preserveAspectRatio="none">
-            <polygon
-                fill="rgba(122, 222, 174, 0.4)"
-                strokeWidth="0"
-                points={`${x0},1 ${x0 + 1},1 ${x1 + 1},0 ${x1},0`}/>
-        </svg>
-    </div>;
+    return (
+        <div
+            className={classes.snake}
+            style={{
+                bottom: `${y0 * 100}%`,
+                top: `${(1 - y1) * 100}%`,
+            }}>
+            <svg width="100%" height="100%" viewBox="0 0 7 1" preserveAspectRatio="none">
+                <polygon
+                    fill="rgba(122, 222, 174, 0.4)"
+                    strokeWidth="0"
+                    points={`${x0},1 ${x0 + 1},1 ${x1 + 1},0 ${x1},0`}/>
+            </svg>
+        </div>
+    );
 }
 
 function Notes({
     time2Notes, music: { duration }, notes, setNotes,
-    findNote, forEachNote, forEachGroup, code,
+    findNote, forEachNote, forEachGroup, code, thumb = false,
 }) {
     const classes = useStyles();
 
     const snakes = useMemo(() => {
         const res = [];
+        if (thumb) return res;
         ['A', 'B'].forEach((pos) => {
             let lastY = 0, lastLane = -1;
             forEachNote((time, { lane, end }) => {
@@ -152,10 +166,11 @@ function Notes({
             }, { pos, note: 'Slide' });
         });
         return res;
-    }, [duration, forEachNote]);
+    }, [duration, forEachNote, thumb]);
 
     const tapLines = useMemo(() => {
         const res = [];
+        if (thumb) return res;
         forEachGroup((time, notes) => {
             let minLane = 8, maxLane = -1;
             for (const { lane, note: type, start, end } of notes) {
@@ -179,7 +194,7 @@ function Notes({
             }
         });
         return res;
-    }, [classes, duration, forEachGroup]);
+    }, [classes, duration, forEachGroup, thumb]);
 
     const noteEls = useMemo(() => {
         const res = [];
@@ -192,10 +207,11 @@ function Notes({
                 setNotes={setNotes}
                 findNote={findNote}
                 code={code}
+                thumb={thumb}
                 {...note}/>);
         });
         return res;
-    }, [code, duration, findNote, notes, setNotes, time2Notes]);
+    }, [code, duration, findNote, notes, setNotes, time2Notes, thumb]);
 
     const children = useMemo(() => [...snakes, ...tapLines, ...noteEls], [snakes, tapLines, noteEls]);
     

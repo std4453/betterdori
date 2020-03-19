@@ -1,4 +1,5 @@
 import React from 'react';
+import { makeStyles } from '@material-ui/styles';
 
 import Controls from '../ui/Controls';
 
@@ -9,6 +10,7 @@ import useChart from './useChart';
 import Score from './Score';
 import Bars from './Bars';
 import Notes from './Notes';
+import Thumb from './Thumb';
 
 import Player from '../tools/Player';
 import SoundFX from '../tools/SoundFX';
@@ -20,31 +22,60 @@ import Divisions from '../tools/Divisions';
 import PlacementCaret from '../tools/PlacementCaret';
 import Modification from '../tools/Modification';
 
+const useStyles = makeStyles({
+    middle: {
+        position: 'absolute',
+        left: '25%',
+        top: 0,
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'start',
+        alignItems: 'stretch',
+    },
+    right: {
+        position: 'absolute',
+        right: 0,
+        height: '100%',
+        top: 0,
+    },
+});
+
 function Chart({ music }) {
+    const classes = useStyles();
+
     const chartParams = useChart(music);
     const scoreParams = useScore(chartParams);
     const toolParams = useTool();
     const params = { music, ...chartParams, ...scoreParams, ...toolParams };
 
     return <>
-        <Score {...params}>
-            <Bars {...params}/>
+        <div className={classes.middle}>
+            <Score {...params}>
+                <Bars {...params}/>
 
-            <PlacementCaret {...params}/>
-            <Placement {...params}/>
+                <PlacementCaret {...params}/>
+                <Placement {...params}/>
 
-            <Notes  {...params}/>
+                <Notes {...params}/>
 
-            <PlayerCaret {...params}/>
-            <Progress {...params}/>
-            <Player {...params}/>
-            <SoundFX {...params}/>
-            <Markers {...params}/>
+                <PlayerCaret {...params}/>
+                <Progress {...params}/>
+                <Player {...params}/>
+                <SoundFX {...params}/>
+                <Markers {...params}/>
 
-            <Divisions {...params}/>
-            <Modification  {...params}/>
-        </Score>
-        <Controls music={music} {...params}/>
+                <Divisions {...params}/>
+                <Modification  {...params}/>
+            </Score>
+            <Controls music={music} {...params}/>
+        </div>
+        <div className={classes.right}>
+            <Thumb {...params}>
+                <Bars {...params} division={1 / 4} thumb={true}/>
+                <Notes {...params} thumb={true}/>
+            </Thumb>
+        </div>
     </>;
 };
 

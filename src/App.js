@@ -18,11 +18,6 @@ const useStyles = makeStyles({
     top: 0,
     height: '100%',
   },
-  right: {
-    position: 'absolute',
-    right: 0,
-    top: 0,
-  },
 });
 
 function App() {
@@ -32,12 +27,7 @@ function App() {
       <div className={classes.left}>
 
       </div>
-      <div className={classes.middle}>
-        <Editor/>
-      </div>
-      <div className={classes.right}>
-
-      </div>
+      <Editor/>
     </div>
   );
 }

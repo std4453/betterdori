@@ -9,6 +9,9 @@ const useStyles = makeStyles({
         width: `${7 / 11 * 100}%`,
         left: `${2 / 11 * 100}%`,
         opacity: 0.5,
+        '&$thumb': {
+            opacity: 0.3,
+        },
     },
     lanes: {
         position: 'absolute',
@@ -39,9 +42,10 @@ const useStyles = makeStyles({
     major: {
         borderBottom: '1px solid #FFF',
     },
+    thumb: {},
 });
 
-function Bars({ music: { duration }, ranges, division }) {
+function Bars({ music: { duration }, ranges, division, thumb = false }) {
     const classes = useStyles();
     const bars = useMemo(() => {
         const bars = [];
@@ -61,16 +65,16 @@ function Bars({ music: { duration }, ranges, division }) {
         return bars;
     }, [ranges, duration, division, classes]);
     return (
-        <div className={classes.root}>
+        <div className={classNames(classes.root, { [classes.thumb]: thumb })}>
             <div className={classes.lanes}>
-                <div className={classes.sideLane}/>
+                <div className={thumb ? classes.middleLane : classes.sideLane}/>
                 <div className={classes.middleLane}/>
                 <div className={classes.middleLane}/>
                 <div className={classes.middleLane}/>
                 <div className={classes.middleLane}/>
                 <div className={classes.middleLane}/>
                 <div className={classes.middleLane}/>
-                <div className={classes.sideLane}/>
+                <div className={thumb ? classes.middleLane : classes.sideLane}/>
             </div>
             {bars}
         </div>
