@@ -1,5 +1,7 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useContext } from 'react';
 import { makeStyles } from '@material-ui/styles';
+import KeyboardEventHandler from 'react-keyboard-event-handler';
+import { ToolContext } from './Tool';
 import marker from '../assets/marker.svg';
 
 const useStyles = makeStyles({
@@ -22,8 +24,9 @@ const useStyles = makeStyles({
     },
 });
 
-function Markers({ time2Markers, markers, setMarkers, music }) {
+function Markers({ time2Markers, markers, setMarkers, music, quantize }) {
     const classes = useStyles();
+
     const onContextMenu = useCallback((event) => {
         const beat = event.target.getAttribute('data-beat');
         setMarkers(markers.remove(beat));
@@ -52,12 +55,22 @@ function Markers({ time2Markers, markers, setMarkers, music }) {
         });
         return res;
     }, [time2Markers, classes, music, onContextMenu, onClick]);
+
+    const { code } = useContext(ToolContext);
+    const onMarker = useCallback(() => {
+        const { beat } = quantize(music.currentTime);
+        // markers are unique in time, so one at a time
+        if (!markers.find(beat).valid) {
+            setMarkers(markers.insert(beat, {}));
+        }
+    }, [markers, music, quantize, setMarkers]);
     
-    return (
+    return <>
+        <KeyboardEventHandler isDisabled={code !== 'player'} handleKeys={['e']} onKeyEvent={onMarker}/>
         <div className={classes.root}>
             {markerEls}
         </div>
-    );
+    </>;
 }
 
 export default Markers;

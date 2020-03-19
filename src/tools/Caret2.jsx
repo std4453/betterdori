@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState, useContext } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { ToolContext } from './Tool';
-import { quantize } from './utils';
 
 const useStyles = makeStyles({
     root: {
@@ -27,7 +26,7 @@ const useStyles = makeStyles({
     },
 });
 
-function Caret2({ time2Timers, music: { duration }, innerEl, division }) {
+function Caret2({ music: { duration }, innerEl, quantize }) {
     const classes = useStyles();
 
     const { code } = useContext(ToolContext);
@@ -37,10 +36,10 @@ function Caret2({ time2Timers, music: { duration }, innerEl, division }) {
         if (!caretEl || !notesCounterEl || !innerEl) return;
         const { y, height } = innerEl.getBoundingClientRect();
         const time = (1 - (e.clientY - y) / height) * duration;
-        const { time: quantizedTime, beat } = quantize(time, time2Timers, division);
+        const { time: quantizedTime, beat } = quantize(time);
         caretEl.style.bottom = `${quantizedTime / duration * 100}%`;
         notesCounterEl.innerHTML = `${beat.toFixed(2)}'`;
-    }, [caretEl, notesCounterEl, innerEl, duration, time2Timers, division]);
+    }, [caretEl, notesCounterEl, innerEl, duration, quantize]);
     useEffect(() => {
         if (!innerEl) return;
         innerEl.addEventListener('mousemove', updateCaret);

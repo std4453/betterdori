@@ -26,7 +26,7 @@ const useStyles = makeStyles({
     },
 });
 
-function Caret({ time2Notes, music: { duration }, innerEl }) {
+function Caret({ music: { duration }, innerEl, countNotes }) {
     const classes = useStyles();
 
     const { code } = useContext(ToolContext);
@@ -39,13 +39,9 @@ function Caret({ time2Notes, music: { duration }, innerEl }) {
         const top = (e.clientY - y) / height;
         caretEl.style.top = `${top * 100}%`;
         const time = (1 - top) * duration;
-        const { valid, index } = time2Notes.le(time);
-        // an invalid iterator with index = size - 1 is returned if the
-        // key is smaller than the smallest key. index + 1 since we want to
-        // disolay the number of notes *including* this one.
-        const notesCount = valid ? index + 1 : 0;
+        const notesCount = countNotes(time);
         notesCounterEl.innerHTML = `${notesCount}`;
-    }, [caretEl, innerEl, notesCounterEl, duration, time2Notes]);
+    }, [caretEl, innerEl, notesCounterEl, duration, countNotes]);
     useEffect(() => {
         if (!innerEl) return;
         innerEl.addEventListener('mousemove', updateCaret);

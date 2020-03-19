@@ -1,7 +1,6 @@
 import React, { useMemo, useContext, useCallback } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import classNames from 'classnames';
-import Snake from './Snake';
 import focus from '../assets/focus.svg';
 import { ToolContext } from './Tool';
 
@@ -77,9 +76,15 @@ const useStyles = makeStyles({
         marginBottom: -1.5,
         borderBottom: '3px solid #FFF',
     },
+    snake: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        display: 'flex',
+    },
 });
 
-function Note({ notes, setNotes, beat, time, duration, lane, note: type, flick, start, end }) {
+function Note({ setNotes, beat, time, duration, lane, note: type, flick, start, end, findNote }) {
     const classes = useStyles();
     const { code } = useContext(ToolContext);
 
@@ -90,15 +95,12 @@ function Note({ notes, setNotes, beat, time, duration, lane, note: type, flick, 
     const onClick = useCallback(() => {
         if (code !== 'modification/flick') return;
         if (single || (slide && full)) {
-            for (const it = notes.ge(beat); it.valid && it.key === beat; it.next()) {
-                if (it.value.lane !== lane) continue;
-                setNotes(it.update({
-                    ...it.value, flick: !flick,
-                }));
-                break;
-            }
+            const it = findNote(beat, lane);
+            if (it) setNotes(it.update({
+                ...it.value, flick: !flick,
+            }));
         }
-    }, [beat, code, flick, full, lane, notes, setNotes, single, slide]);
+    }, [beat, code, findNote, flick, full, lane, setNotes, single, slide]);
 
     return (
         <div
@@ -122,15 +124,34 @@ function Note({ notes, setNotes, beat, time, duration, lane, note: type, flick, 
     );
 }
 
-function Notes({ time2Notes, music: { duration }, notes, setNotes }) {
+function Snake({ x0, x1, y0, y1 }) {
     const classes = useStyles();
-    const children = useMemo(() => {
-        const res = [];
+    return <div
+        className={classes.snake}
+        style={{
+            bottom: `${y0 * 100}%`,
+            top: `${(1 - y1) * 100}%`,
+        }}>
+        <svg width="100%" height="100%" viewBox="0 0 7 1" preserveAspectRatio="none">
+            <polygon
+                fill="rgba(122, 222, 174, 0.4)"
+                strokeWidth="0"
+                points={`${x0},1 ${x0 + 1},1 ${x1 + 1},0 ${x1},0`}/>
+        </svg>
+    </div>;
+}
 
+function Notes({
+    time2Notes, music: { duration }, notes, setNotes,
+    findNote, forEachNote, forEachGroup,
+}) {
+    const classes = useStyles();
+
+    const snakes = useMemo(() => {
+        const res = [];
         ['A', 'B'].forEach((pos) => {
             let lastY = 0, lastLane = -1;
-            time2Notes.forEach((time, { note, pos: notePos, lane, end }) => {
-                if (note !== 'Slide' || pos !== notePos) return;
+            forEachNote((time, { lane, end }) => {
                 if (lastLane !== -1) {
                     const y1 = time / duration;
                     res.push(<Snake
@@ -140,23 +161,23 @@ function Notes({ time2Notes, music: { duration }, notes, setNotes }) {
                 }
                 lastLane = end ? -1 : lane;
                 lastY = time / duration;
-            });
+            }, { pos, note: 'Slide' });
         });
+        return res;
+    }, [duration, forEachNote]);
 
-        for (let it = time2Notes.begin; it.hasNext;) {
-            const { key: time } = it;
+    const tapLines = useMemo(() => {
+        const res = [];
+        forEachGroup((time, notes) => {
             let minLane = 8, maxLane = -1;
-            do {
-                const { lane, note: type, start, end } = it.value;
+            for (const { lane, note: type, start, end } of notes) {
                 // Synchronus tap line appears two notes possess the same beat,
                 // but middle slide notes are not counted
                 if (type !== 'Slide' || start || end) {
                     minLane = Math.min(minLane, lane);
                     maxLane = Math.max(maxLane, lane);
                 }
-                it.next();
-            } while (it.key <= time && it.hasNext);
-
+            }
             if (minLane < maxLane - 1) { // at least two notes, distance >= 2, display sync tap line
                 res.push(<div
                     key={`tap-line-${time}`}
@@ -168,8 +189,12 @@ function Notes({ time2Notes, music: { duration }, notes, setNotes }) {
                     }}
                 />)
             }
-        }
+        });
+        return res;
+    }, [classes, duration, forEachGroup]);
 
+    const noteEls = useMemo(() => {
+        const res = [];
         time2Notes.forEach((time, note) => {
             res.push(<Note
                 key={`note-${note.beat}-${note.lane}`}
@@ -177,11 +202,14 @@ function Notes({ time2Notes, music: { duration }, notes, setNotes }) {
                 duration={duration}
                 notes={notes}
                 setNotes={setNotes}
+                findNote={findNote}
                 {...note}/>);
         });
-
         return res;
-    }, [time2Notes, duration, classes, notes, setNotes]);
+    }, [duration, findNote, notes, setNotes, time2Notes]);
+
+    const children = useMemo(() => [...snakes, ...tapLines, ...noteEls], [snakes, tapLines, noteEls]);
+    
     return (
         <div className={classes.root}>
             {children}

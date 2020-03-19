@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import createTree from 'functional-red-black-tree';
 import testScore from './assets/test_score.json';
 
@@ -90,13 +90,80 @@ function useChart(music) {
     const [follow, setFollow] = useState(initial.follow);
     const [scale, setScale] = useState(initial.scale);
 
-    const [containerEl, setContainerEl] = useState(null);
-    const [innerEl, setInnerEl] = useState(null);
+    const quantize = useCallback((time) => {
+        const { key: rangeStartTime, value: { bpm, beat: rangeStartBeat } } = time2Timers.le(time);
+        const { value: { beat: rangeEndBeat } } = time2Timers.gt(time);
+        let quantizedBeat = rangeStartBeat + Math.round(
+            (time - rangeStartTime) / 60 * bpm * division
+        ) / division;
+        // if quantized result exceeds the previous range, it falls on the beginning
+        // of the next range instead
+        if (quantizedBeat > rangeEndBeat) quantizedBeat = rangeEndBeat;
+        const quantizedTime = rangeStartTime + (quantizedBeat - rangeStartBeat) / bpm * 60;
+        const delta = Math.abs(quantizedTime - time) / 60 * bpm * division;
+        return { beat: quantizedBeat, time: quantizedTime, bpm, delta };
+    }, [division, time2Timers]);
+    const countNotes = useCallback((time) => {
+        const { valid, index } = time2Notes.le(time);
+        // an invalid iterator with index = size - 1 is returned if the
+        // key is smaller than the smallest key. index + 1 since we want to
+        // disolay the number of notes *including* this one.
+        return valid ? index + 1 : 0;
+    }, [time2Notes]);
+    const findNotePure = useCallback((notes, beat, lane) => {
+        for (const it = notes.ge(beat); it.valid && it.key === beat; it.next()) {
+            if (it.value.lane !== lane) continue;
+            return it;
+        }
+        return null;
+    }, []);
+    const findNote = useCallback((beat, lane) => findNotePure(notes, beat, lane), [findNotePure, notes]);
+    const forEachNote = useCallback((visit, filter) => {
+        time2Notes.forEach((time, note) => {
+            if (filter) {
+                for (const key in filter) {
+                    if (filter[key] !== note[key]) return;
+                }
+                visit(time, note);
+            }
+        });
+    }, [time2Notes]);
+    const forEachGroup = useCallback((visit) => {
+        for (let it = time2Notes.begin; it.valid;) {
+            const { key: time } = it;
+            const notes = [];
+            do {
+                notes.push(it.value);
+                it.next();
+            } while (it.key <= time && it.valid);
+            visit(time, notes);
+        }
+    }, [time2Notes]);
+    const scaleX = 8;
+    const matchNotePure = useCallback((notes, time2Timers, time, lane, threshold) => {
+        const { key: startTime, value: { beat: startBeat, bpm } } = time2Timers.le(time);
+        const beat = startBeat + (time - startTime) / 60 * bpm; 
+        let minDist = threshold * threshold, minBeat, minLane = NaN;
+        notes.forEach((noteBeat, { lane: noteLane }) => {
+            const dist = Math.pow((noteLane - lane) / scaleX, 2) + Math.pow(noteBeat - beat, 2);
+            if (dist < minDist) {
+                minDist = dist;
+                minBeat = noteBeat;
+                minLane = noteLane;
+            }
+        }, beat - threshold, beat + threshold);
+        if (isNaN(minLane)) return null;
+        else return { beat: minBeat, lane: minLane };
+    }, []);
+    const matchNote = useCallback((time, lane, threshold) =>
+        matchNotePure(notes, time2Timers, time, lane, threshold),
+        [matchNotePure, notes, time2Timers]);
+
     const params = {
         music, timers, setTimers, notes, setNotes, markers, setMarkers,
         ranges, time2Timers, time2Notes, time2Markers,
-        containerEl, setContainerEl, innerEl, setInnerEl,
         ...initial, division, setDivision, follow, setFollow, scale, setScale,
+        quantize, countNotes, findNotePure, findNote, forEachNote, forEachGroup, matchNotePure, matchNote,
     };
 
     return params;

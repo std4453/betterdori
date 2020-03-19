@@ -1,8 +1,7 @@
+import React, { useCallback, useEffect } from 'react';
 import { makeStyles } from '@material-ui/styles';
-import createTree from 'functional-red-black-tree';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import testScore from './assets/test_score.json';
 import tools from './tools/config';
+import useScore from './useScore';
 import { normalizeWheel } from './tools/utils';
 import Controls from './ui/Controls';
 import useChart from './useChart';
@@ -25,28 +24,17 @@ const useStyles = makeStyles({
     },
 });
 
-const initialSettings = {
-    // initial values
-    follow: false,
-    division: 2,
-    scale: 600,
-
-    // other settings
-    progressOffset: 180,
-    scrollSpeed: 0.03,
-    scaleSpeed: 0.0005,
-    minScale: 50,
-    maxScale: 2000,
-};
-
 function Score({ music }) {
     const classes = useStyles();
 
-    const params = useChart(music);
+    const chartParams = useChart(music);
     const {
         scale, setScale, scaleSpeed, minScale, maxScale, scrollSpeed,
+    } = chartParams;
+    const scoreParams = useScore(chartParams);
+    const {
         containerEl, setContainerEl, innerEl, setInnerEl,
-    } = params;
+    } = scoreParams;
 
     // scale = pixels per second
     const onWheel = useCallback((e) => {
@@ -116,11 +104,11 @@ function Score({ music }) {
                 style={{ height: music.duration * scale }}
                 className={classes.inner}>
                 {tools.map((Component, i) => (
-                    <Component key={i} {...params}/>
+                    <Component key={i} {...chartParams} {...scoreParams}/>
                 ))}
             </div>
         </div>
-        <Controls {...params}/>
+        <Controls {...chartParams} {...scoreParams}/>
     </>;
 };
 
