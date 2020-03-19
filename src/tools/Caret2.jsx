@@ -1,6 +1,6 @@
 import { makeStyles } from '@material-ui/styles';
 import React, { useCallback, useState } from 'react';
-import useEvent from '../useEvent';
+import useEvent from '../hooks/useEvent';
 
 const useStyles = makeStyles({
     root: {

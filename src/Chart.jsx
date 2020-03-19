@@ -1,10 +1,10 @@
 import React from 'react';
 import tools from './tools/config';
-import useScore from './useScore';
+import useScore from './hooks/useScore';
+import useTool from './hooks/useTool';
+import useChart from './hooks/useChart';
 import Controls from './ui/Controls';
-import useChart from './useChart';
 import Score from './Score';
-import useTool from './useTool';
 
 function Chart({ music }) {
     const chartParams = useChart(music);

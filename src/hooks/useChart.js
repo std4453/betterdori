@@ -1,6 +1,6 @@
 import { useMemo, useState, useCallback } from 'react';
 import createTree from 'functional-red-black-tree';
-import testScore from './assets/test_score.json';
+import testScore from '../assets/test_score.json';
 
 const initial = {
     score: testScore,
