@@ -16,7 +16,14 @@ const useDrag = ({ onDragStart, onDrag, onDragEnd, el }) => {
         states.lastY = e.clientY;
         if (!states.dragging) {
             states.dragging = true;
-            if (onDragStart) onDragStart(e, states);
+            if (onDragStart) {
+                const ret = onDragStart(e, states);
+                // disable event, no prevent default, no stop propagation.
+                if (ret === false) {
+                    states.left = states.right = states.dragging = false;
+                    return;
+                }
+            }
         }
         e.preventDefault();
         e.stopPropagation();

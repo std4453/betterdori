@@ -83,26 +83,13 @@ const useStyles = makeStyles({
     },
 });
 
-function Note({
-    beat, time, duration, lane, note: type, flick, start, end, 
-    setNotes, findNote, code,
-}) {
+function Note({ time, duration, lane, note: type, flick, start, end, code }) {
     const classes = useStyles();
 
     const single = type === 'Single';
     const slide = type === 'Slide';
     const full = start || end;
     const focusable = code.startsWith('placement/') || code.startsWith('modification/');
-
-    const onClick = useCallback(() => {
-        if (code !== 'modification/flick') return;
-        if (single || (slide && full)) {
-            const it = findNote(beat, lane);
-            if (it) setNotes(it.update({
-                ...it.value, flick: !flick,
-            }));
-        }
-    }, [beat, code, findNote, flick, full, lane, setNotes, single, slide]);
 
     return (
         <div
@@ -116,8 +103,7 @@ function Note({
             style={{
                 bottom: `${time / duration * 100}%`,
                 left: `${lane / 7 * 100}%`,
-            }}
-            onClick={onClick}>
+            }}>
             <img
                 className={classes.focus}
                 alt="focus"

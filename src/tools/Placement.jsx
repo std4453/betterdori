@@ -78,7 +78,12 @@ function Placement({
     // destroying any internal state (like dragging) we kept in that closure.
     const notesRef = useRef(notes);
     useEffect(() => { notesRef.current = notes; }, [notes]);
+    const codeRef = useRef(code);
+    useEffect(() => { codeRef.current = code; }, [code]);
 
+    const onDragStart = useCallback(() => {
+        if (!code.startsWith('placement/')) return false;
+    }, [code]);
     const onDrag = useCallback((e, { shift, left, right }) => {
         const notes = notesRef.current;
         // when dragging, the mousemove event might be fired multiple times in one
@@ -135,7 +140,7 @@ function Placement({
         }
     }, [code, findNotePure, inflate, matchNotePure, quantize, setNotes, time2Timers]);
 
-    useDrag({ onDrag, onDragEnd, el: innerEl });
+    useDrag({ onDragStart, onDrag, onDragEnd, el: innerEl });
 
     return <>
         <KeyboardEventHandler handleKeys={['f']} onKeyEvent={setSingle}/>
