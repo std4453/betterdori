@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useState, useContext } from 'react';
 import { makeStyles } from '@material-ui/styles';
-import { ToolContext } from './Tool';
+import React, { useCallback, useState } from 'react';
+import useEvent from '../useEvent';
 
 const useStyles = makeStyles({
     root: {
@@ -26,25 +26,18 @@ const useStyles = makeStyles({
     },
 });
 
-function Caret2({ music: { duration }, innerEl, quantize }) {
+function Caret2({ music: { duration }, innerEl, quantize, inflate, code }) {
     const classes = useStyles();
 
-    const { code } = useContext(ToolContext);
     const [caretEl, setCaretEl] = useState(null);
     const [notesCounterEl, setNotesCounterEl] = useState(null);
     const updateCaret = useCallback((e) => {
-        if (!caretEl || !notesCounterEl || !innerEl) return;
-        const { y, height } = innerEl.getBoundingClientRect();
-        const time = (1 - (e.clientY - y) / height) * duration;
+        const { time } = inflate(e);
         const { time: quantizedTime, beat } = quantize(time);
-        caretEl.style.bottom = `${quantizedTime / duration * 100}%`;
-        notesCounterEl.innerHTML = `${beat.toFixed(2)}'`;
-    }, [caretEl, notesCounterEl, innerEl, duration, quantize]);
-    useEffect(() => {
-        if (!innerEl) return;
-        innerEl.addEventListener('mousemove', updateCaret);
-        return () => innerEl.removeEventListener('mousemove', updateCaret);
-    }, [innerEl, updateCaret]);
+        if (caretEl) caretEl.style.bottom = `${quantizedTime / duration * 100}%`;
+        if (notesCounterEl) notesCounterEl.innerHTML = `${beat.toFixed(2)}'`;
+    }, [inflate, quantize, caretEl, duration, notesCounterEl]);
+    useEvent(innerEl, 'mousemove', updateCaret);
 
     return (code.startsWith('placement/') || code.startsWith('modification/')) && (
         <div ref={setCaretEl} className={classes.root}>

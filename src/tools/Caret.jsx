@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useState, useContext } from 'react';
+import React, { useCallback, useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
-import { ToolContext } from './Tool';
+import useEvent from '../useEvent';
 
 const useStyles = makeStyles({
     root: {
@@ -26,27 +26,17 @@ const useStyles = makeStyles({
     },
 });
 
-function Caret({ music: { duration }, innerEl, countNotes }) {
+function Caret({ inflate, innerEl, countNotes, code }) {
     const classes = useStyles();
 
-    const { code } = useContext(ToolContext);
     const [caretEl, setCaretEl] = useState(null);
     const [notesCounterEl, setNotesCounterEl] = useState(null);
     const updateCaret = useCallback((e) => {
-        if (!caretEl || !innerEl || !notesCounterEl) return;
-        const { y, height } = innerEl.getBoundingClientRect();
-        // percentage keeps the progress position unchanged upon scaling
-        const top = (e.clientY - y) / height;
-        caretEl.style.top = `${top * 100}%`;
-        const time = (1 - top) * duration;
-        const notesCount = countNotes(time);
-        notesCounterEl.innerHTML = `${notesCount}`;
-    }, [caretEl, innerEl, notesCounterEl, duration, countNotes]);
-    useEffect(() => {
-        if (!innerEl) return;
-        innerEl.addEventListener('mousemove', updateCaret);
-        return () => innerEl.removeEventListener('mousemove', updateCaret);
-    }, [innerEl, updateCaret]);
+        const { top, time } = inflate(e);
+        if (caretEl) caretEl.style.top = `${top * 100}%`;
+        if (notesCounterEl) notesCounterEl.innerHTML = `${countNotes(time)}`;
+    }, [caretEl, notesCounterEl, inflate, countNotes]);
+    useEvent(innerEl, 'mousemove', updateCaret);
 
     return code === 'player' && (
         <div ref={setCaretEl} className={classes.root}>

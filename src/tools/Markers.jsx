@@ -1,7 +1,6 @@
-import React, { useMemo, useCallback, useContext } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import KeyboardEventHandler from 'react-keyboard-event-handler';
-import { ToolContext } from './Tool';
 import marker from '../assets/marker.svg';
 
 const useStyles = makeStyles({
@@ -24,7 +23,7 @@ const useStyles = makeStyles({
     },
 });
 
-function Markers({ time2Markers, markers, setMarkers, music, quantize }) {
+function Markers({ time2Markers, markers, setMarkers, music, quantize, code }) {
     const classes = useStyles();
 
     const onContextMenu = useCallback((event) => {
@@ -56,13 +55,10 @@ function Markers({ time2Markers, markers, setMarkers, music, quantize }) {
         return res;
     }, [time2Markers, classes, music, onContextMenu, onClick]);
 
-    const { code } = useContext(ToolContext);
     const onMarker = useCallback(() => {
         const { beat } = quantize(music.currentTime);
         // markers are unique in time, so one at a time
-        if (!markers.find(beat).valid) {
-            setMarkers(markers.insert(beat, {}));
-        }
+        if (!markers.find(beat).valid) setMarkers(markers.insert(beat, {}));
     }, [markers, music, quantize, setMarkers]);
     
     return <>

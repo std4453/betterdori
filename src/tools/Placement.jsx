@@ -1,6 +1,5 @@
-import React, { useCallback, useEffect, useContext, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import KeyboardEventHandler from 'react-keyboard-event-handler';
-import { ToolContext } from './Tool';
 import useDrag from './useDrag';
 
 // the bigger this value is, the bigger the false positive rates are, and the smaller
@@ -62,8 +61,8 @@ const placeNote = (code, notes, findNotePure, setNotes, beat, lane, convertSlide
 
 function Placement({
     notes, setNotes, time2Timers, innerEl, inflate, matchNotePure, quantize, findNotePure,
+    code, setCode,
 }) {
-    const { code, setCode } = useContext(ToolContext);
     const setSingle = useCallback(() => setCode('placement/single'), [setCode]);
     const setSlideA = useCallback(() => setCode('placement/slide-a'), [setCode]);
     const setSlideB = useCallback(() => setCode('placement/slide-b'), [setCode]);

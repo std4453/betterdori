@@ -35,7 +35,7 @@ const useStyles = makeStyles({
     },
 });
 
-function Controls({ music, follow, setFollow, division, setDivision }) {
+function Controls({ music, follow, setFollow, setDivision, code, setCode }) {
     const classes = useStyles();
     const [paused, setPausedRaw] = useState(music.paused);
     const setPaused = useCallback((paused) => {
@@ -69,13 +69,13 @@ function Controls({ music, follow, setFollow, division, setDivision }) {
     return (
         <div className={classes.root}>
             <Toolbar>
-                <Control alt="E" index={0} code="select" icon={select}/>
-                <Control alt="F" index={2} code="placement/single" icon={single}/>
-                <Control alt="S" index={3} code="placement/slide-a" icon={slide1}/>
-                <Control alt="D" index={4} code="placement/slide-b" icon={slide2}/>
-                <Control alt="W" index={5} code="modification/flick" icon={flick}/>
-                <Control alt="A" index={6} code="timer" icon={timer}/>
-                <Control index={7} code="bars" icon={bars}>
+                <Control code={code} setCode={setCode} alt="E" index={0} matchCode="select" icon={select}/>
+                <Control code={code} setCode={setCode} alt="F" index={2} matchCode="placement/single" icon={single}/>
+                <Control code={code} setCode={setCode} alt="S" index={3} matchCode="placement/slide-a" icon={slide1}/>
+                <Control code={code} setCode={setCode} alt="D" index={4} matchCode="placement/slide-b" icon={slide2}/>
+                <Control code={code} setCode={setCode} alt="W" index={5} matchCode="modification/flick" icon={flick}/>
+                <Control code={code} setCode={setCode} alt="A" index={6} matchCode="timer" icon={timer}/>
+                <Control code={code} setCode={setCode} index={7} matchCode="bars" icon={bars}>
                     <Button alt="1" onClick={setD1} icon={d1}/>
                     <Button alt="2" onClick={setD2} icon={d2}/>
                     <Button alt="3" onClick={setD3} icon={d3}/>
@@ -83,7 +83,7 @@ function Controls({ music, follow, setFollow, division, setDivision }) {
                     <Button alt="6" onClick={setD6} icon={d6}/>
                     <Button alt="8" onClick={setD8} icon={d8}/>
                 </Control>
-                <Control alt="R" index={8} code="player" icon={player}>
+                <Control code={code} setCode={setCode} alt="R" index={8} matchCode="player" icon={player}>
                     <Carousel
                         state={paused}
                         setState={setPaused}

@@ -1,8 +1,7 @@
-import React, { useMemo, useContext, useCallback } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import classNames from 'classnames';
+import React, { useCallback, useMemo } from 'react';
 import focus from '../assets/focus.svg';
-import { ToolContext } from './Tool';
 
 const useStyles = makeStyles({
     root: {
@@ -17,7 +16,7 @@ const useStyles = makeStyles({
         borderRadius: '50%',
         position: 'absolute',
         marginBottom: '-0.5em',
-        '&:hover $focus': {
+        '&$focusable:hover $focus': {
             visibility: 'initial',
         },
     },
@@ -84,13 +83,16 @@ const useStyles = makeStyles({
     },
 });
 
-function Note({ setNotes, beat, time, duration, lane, note: type, flick, start, end, findNote }) {
+function Note({
+    beat, time, duration, lane, note: type, flick, start, end, 
+    setNotes, findNote, code,
+}) {
     const classes = useStyles();
-    const { code } = useContext(ToolContext);
 
     const single = type === 'Single';
     const slide = type === 'Slide';
     const full = start || end;
+    const focusable = code.startsWith('placement/') || code.startsWith('modification/');
 
     const onClick = useCallback(() => {
         if (code !== 'modification/flick') return;
@@ -109,17 +111,17 @@ function Note({ setNotes, beat, time, duration, lane, note: type, flick, start, 
                 [classes.slide]: slide && full && !flick,
                 [classes.flick]: flick,
                 [classes.middle]: slide && !full,
-                [classes.focusable]: code.startsWith('placement/') || code.startsWith('modification/'),
+                [classes.focusable]: focusable,
             })}
             style={{
                 bottom: `${time / duration * 100}%`,
                 left: `${lane / 7 * 100}%`,
             }}
             onClick={onClick}>
-            {(code.startsWith('placement/') || code.startsWith('modification/')) && <img
+            <img
                 className={classes.focus}
                 alt="focus"
-                src={focus}/>}
+                src={focus}/>
         </div>
     );
 }
@@ -143,7 +145,7 @@ function Snake({ x0, x1, y0, y1 }) {
 
 function Notes({
     time2Notes, music: { duration }, notes, setNotes,
-    findNote, forEachNote, forEachGroup,
+    findNote, forEachNote, forEachGroup, code,
 }) {
     const classes = useStyles();
 
@@ -203,10 +205,11 @@ function Notes({
                 notes={notes}
                 setNotes={setNotes}
                 findNote={findNote}
+                code={code}
                 {...note}/>);
         });
         return res;
-    }, [duration, findNote, notes, setNotes, time2Notes]);
+    }, [code, duration, findNote, notes, setNotes, time2Notes]);
 
     const children = useMemo(() => [...snakes, ...tapLines, ...noteEls], [snakes, tapLines, noteEls]);
     

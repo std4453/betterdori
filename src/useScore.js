@@ -14,10 +14,18 @@ const useScore = ({ music: { duration }, time2Timers }) => {
         const lane = left / width * 11 - 2.5;
         return { top, left, time, beat, lane};
     }, [duration, innerEl, time2Timers]);
+
+    const keepInView = useCallback((position) => {
+        const height = innerEl.getBoundingClientRect().height;
+        let viewTop = position - window.innerHeight;
+        if (viewTop < 0) viewTop = 0;
+        else if (position > height) viewTop = height - window.innerHeight;
+        if (containerEl) containerEl.scrollTop = viewTop;
+    }, [containerEl, innerEl]);
     
     const params = {
         containerEl, setContainerEl, innerEl, setInnerEl,
-        inflate,
+        inflate, keepInView,
     };
 
     return params;

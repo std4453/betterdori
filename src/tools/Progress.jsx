@@ -1,6 +1,7 @@
-import React, { useCallback, useEffect, useState, useContext } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
-import { ToolContext } from './Tool';
+import useEvent from '../useEvent';
+import useFrame from '../useFrame';
 
 const useStyles = makeStyles({
     root: {
@@ -13,52 +14,34 @@ const useStyles = makeStyles({
     },
 });
 
-function Progress({ music, containerEl, innerEl, follow, progressOffset }) {
+function Progress({
+    music, innerEl, follow, progressOffset, code, keepInView, inflate,
+}) {
     const classes = useStyles();
 
     const [progressEl, setProgressEl] = useState(null);
     const updateProgress = useCallback((noscroll = false) => {
-        if (!progressEl || !innerEl) return;
-
+        if (music.paused) return;
         // use getBoundingClientRect so that the dimensions do not rely on scale
         const height = innerEl.getBoundingClientRect().height;
         const progress = music.currentTime / music.duration;
         const progressPosition = (1 - progress) * height;
     
-        let viewTop = progressPosition + progressOffset - window.innerHeight;
-        // keep progress in view, but not exceeding score boundaries
-        if (viewTop < 0) viewTop = 0;
-        else if (progressPosition + progressOffset > height) viewTop = height - window.innerHeight;
-        if (follow && !noscroll && containerEl) containerEl.scrollTop = viewTop;
-
+        if (follow && !noscroll) keepInView(progressPosition + progressOffset);
         // percentage keeps the progress position unchanged upon scaling
         const progressRatio = progressPosition / height;
-        progressEl.style.top = `${progressRatio * 100}%`;
-    }, [progressEl, innerEl, music, progressOffset, follow, containerEl]);
-    useEffect(() => {
-        let valid = true;
-        const onFrameWrapped = () => {
-            if (!music.paused) updateProgress();
-            if (valid) requestAnimationFrame(onFrameWrapped);
-        };
-        requestAnimationFrame(onFrameWrapped);
-        return () => { valid = false; };
-    }, [music, updateProgress]);
+        if (progressEl) progressEl.style.top = `${progressRatio * 100}%`;
+    }, [progressEl, innerEl, music, follow, keepInView, progressOffset]);
+    useFrame(updateProgress);
     
-    const { code } = useContext(ToolContext);
     const seekProgress = useCallback((e) => {
-        if (!innerEl || code !== 'player') return;
-        const { y, height } = innerEl.getBoundingClientRect();
-        const top = e.clientY - y;
-        music.currentTime = (1 - top / height) * music.duration;
-        updateProgress(true);
+        if (code !== 'player') return;
+        const { time } = inflate(e);
+        music.currentTime = time;
         if (music.paused) music.play();
-    }, [innerEl, music, updateProgress, code]);
-    useEffect(() => {
-        if (!innerEl) return;
-        innerEl.addEventListener('click', seekProgress);
-        return () => innerEl.removeEventListener('click', seekProgress);
-    }, [innerEl, seekProgress]);
+        updateProgress(true);
+    }, [code, inflate, music, updateProgress]);
+    useEvent(innerEl, 'click', seekProgress);
     
     useEffect(updateProgress, [updateProgress, code]);
     return code === 'player' && (

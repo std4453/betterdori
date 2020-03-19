@@ -1,9 +1,7 @@
-import React, { useCallback, useContext, useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import KeyboardEventHandler from 'react-keyboard-event-handler';
-import { ToolContext } from './Tool';
 
-function Player({ music }) {
-    const { code, setCode } = useContext(ToolContext);
+function Player({ music, code, setCode }) {
     const onSpace = useCallback((_, event) => {
         if (music.paused) music.play();
         else music.pause();

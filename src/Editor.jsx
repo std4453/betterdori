@@ -1,8 +1,6 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
-import Score from './Score';
 import test_music from './assets/test_music.mp3';
-import { Tools } from './tools/Tool';
 import Chart from './Chart';
 
 const useStyles = makeStyles({
@@ -27,9 +25,7 @@ function Editor() {
 
     return (
         <div className={classes.root}>
-            <Tools>
-                {initialized && <Chart music={music}/>}
-            </Tools>
+            {initialized && <Chart music={music}/>}
         </div>
     );
 };
