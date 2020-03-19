@@ -12,7 +12,8 @@ const useScore = ({ music: { duration }, time2Timers }) => {
         const { key: startTime, value: { beat: startBeat, bpm } } = time2Timers.le(time);
         const beat = startBeat + (time - startTime) / 60 * bpm;
         const lane = left / width * 11 - 2.5;
-        return { top, left, time, beat, lane};
+        const ratioTop = top / height;
+        return { top, left, time, beat, lane, ratioTop };
     }, [duration, innerEl, time2Timers]);
 
     const keepInView = useCallback((position) => {

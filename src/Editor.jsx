@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import test_music from './assets/test_music.mp3';
-import Chart from './Chart';
+import Chart from './chart/Chart';
 
 const useStyles = makeStyles({
     root: {

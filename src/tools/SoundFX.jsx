@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useRef } from 'react';
 import { Howl } from 'howler';
 import flickFX from '../assets/flick.mp3';
 import tapFX from '../assets/tap.mp3';
-import useFrame from '../hooks/useFrame';
+import useFrame from './useFrame';
 
 function SoundFX({ music, time2Notes }) {
     const tap = useMemo(() => new Howl({ src: [tapFX] }), []);

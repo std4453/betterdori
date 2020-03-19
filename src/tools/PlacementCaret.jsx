@@ -1,6 +1,6 @@
-import React, { useCallback, useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
-import useEvent from '../hooks/useEvent';
+import React, { useCallback, useState } from 'react';
+import useEvent from './useEvent';
 
 const useStyles = makeStyles({
     root: {
@@ -9,7 +9,7 @@ const useStyles = makeStyles({
         right: `${2 / 11 * 100}%`,
         height: 0,
         borderBottom: '3px solid #5996FF',
-        marginTop: -1.5,
+        marginBottom: -1.5,
         pointerEvents: 'none',
     },
     notesCounter: {
@@ -26,23 +26,24 @@ const useStyles = makeStyles({
     },
 });
 
-function Caret({ inflate, innerEl, countNotes, code }) {
+function PlacementCaret({ music: { duration }, innerEl, quantize, inflate, code }) {
     const classes = useStyles();
 
     const [caretEl, setCaretEl] = useState(null);
     const [notesCounterEl, setNotesCounterEl] = useState(null);
     const updateCaret = useCallback((e) => {
-        const { top, time } = inflate(e);
-        if (caretEl) caretEl.style.top = `${top * 100}%`;
-        if (notesCounterEl) notesCounterEl.innerHTML = `${countNotes(time)}`;
-    }, [caretEl, notesCounterEl, inflate, countNotes]);
+        const { time } = inflate(e);
+        const { time: quantizedTime, beat } = quantize(time);
+        if (caretEl) caretEl.style.bottom = `${quantizedTime / duration * 100}%`;
+        if (notesCounterEl) notesCounterEl.innerHTML = `${beat.toFixed(2)}'`;
+    }, [inflate, quantize, caretEl, duration, notesCounterEl]);
     useEvent(innerEl, 'mousemove', updateCaret);
 
-    return code === 'player' && (
+    return (code.startsWith('placement/') || code.startsWith('modification/')) && (
         <div ref={setCaretEl} className={classes.root}>
             <div ref={setNotesCounterEl} className={classes.notesCounter}/>
         </div>
     );
 }
 
-export default Caret;
+export default PlacementCaret;
