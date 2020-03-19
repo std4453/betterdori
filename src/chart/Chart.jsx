@@ -11,6 +11,7 @@ import Score from './Score';
 import Bars from './Bars';
 import Notes from './Notes';
 import Thumb from './Thumb';
+import Stencil from './Stencil';
 
 import Player from '../tools/Player';
 import SoundFX from '../tools/SoundFX';
@@ -74,6 +75,7 @@ function Chart({ music }) {
             <Thumb {...params}>
                 <Bars {...params} division={1 / 4} thumb={true}/>
                 <Notes {...params} thumb={true}/>
+                <Stencil {...params}/>
             </Thumb>
         </div>
     </>;
