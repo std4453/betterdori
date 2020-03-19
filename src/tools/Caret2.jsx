@@ -27,7 +27,7 @@ const useStyles = makeStyles({
     },
 });
 
-function Caret2({ time2Timers, music: { duration }, innerEl, settings: { division } }) {
+function Caret2({ time2Timers, music: { duration }, innerEl, division }) {
     const classes = useStyles();
 
     const { code } = useContext(ToolContext);

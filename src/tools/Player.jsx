@@ -3,7 +3,7 @@ import KeyboardEventHandler from 'react-keyboard-event-handler';
 import { ToolContext } from './Tool';
 import { quantize } from './utils';
 
-function Player({ music, time2Timers, markers, setMarkers, settings: { division } }) {
+function Player({ music, time2Timers, markers, setMarkers, division }) {
     const { code, setCode } = useContext(ToolContext);
     const onSpace = useCallback((_, event) => {
         if (music.paused) music.play();

@@ -41,7 +41,7 @@ const useStyles = makeStyles({
     },
 });
 
-function Bars({ music: { duration }, ranges, settings: { division } }) {
+function Bars({ music: { duration }, ranges, division }) {
     const classes = useStyles();
     const bars = useMemo(() => {
         const bars = [];

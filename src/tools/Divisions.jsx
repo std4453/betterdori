@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import KeyboardEventHandler from 'react-keyboard-event-handler';
 
-function Divisions({ settings: { setDivision }}) {
+function Divisions({ setDivision }) {
     const setDivision1 = useCallback(() => setDivision(1), [setDivision]);
     const setDivision2 = useCallback(() => setDivision(2), [setDivision]);
     const setDivision3 = useCallback(() => setDivision(3), [setDivision]);

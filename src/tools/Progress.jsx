@@ -13,7 +13,7 @@ const useStyles = makeStyles({
     },
 });
 
-function Progress({ music, containerEl, innerEl, settings: { follow, progressOffset } }) {
+function Progress({ music, containerEl, innerEl, follow, progressOffset }) {
     const classes = useStyles();
 
     const [progressEl, setProgressEl] = useState(null);

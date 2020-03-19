@@ -134,7 +134,7 @@ const removeNote = (notes, setNotes, beat, lane) => {
 };
 
 function Placement({
-    time2Timers, notes, setNotes, music: { duration }, innerEl, settings: { division },
+    time2Timers, notes, setNotes, music: { duration }, innerEl, division,
 }) {
     const { code, setCode } = useContext(ToolContext);
     const setSingle = useCallback(() => setCode('placement/single'), [setCode]);

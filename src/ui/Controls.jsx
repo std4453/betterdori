@@ -35,7 +35,7 @@ const useStyles = makeStyles({
     },
 });
 
-function Controls({ music, settings: { follow, setFollow, division, setDivision } }) {
+function Controls({ music, follow, setFollow, division, setDivision }) {
     const classes = useStyles();
     const [paused, setPausedRaw] = useState(music.paused);
     const setPaused = useCallback((paused) => {
