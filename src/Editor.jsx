@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/styles';
 import Score from './Score';
 import test_music from './assets/test_music.mp3';
 import { Tools } from './tools/Tool';
+import Chart from './Chart';
 
 const useStyles = makeStyles({
     root: {
@@ -27,7 +28,7 @@ function Editor() {
     return (
         <div className={classes.root}>
             <Tools>
-                {initialized && <Score music={music}/>}
+                {initialized && <Chart music={music}/>}
             </Tools>
         </div>
     );
