@@ -12,6 +12,7 @@ import Bars from './Bars';
 import Notes from './Notes';
 import Thumb from './Thumb';
 import Stencil from './Stencil';
+import Timers from './Timers';
 
 import Player from '../tools/Player';
 import SoundFX from '../tools/SoundFX';
@@ -54,6 +55,7 @@ function Chart({ music }) {
         <div className={classes.middle}>
             <Score {...params}>
                 <Bars {...params}/>
+                <Timers {...params}/>
 
                 <PlacementCaret {...params}/>
                 <Placement {...params}/>
