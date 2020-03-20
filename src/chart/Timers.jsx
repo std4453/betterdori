@@ -112,11 +112,12 @@ function Timers({ time2Timers, music: { duration }, containerEl, innerEl }) {
     const [lastBPMEl, setLastBPMEl] = useState(null);
     const updateTimerEls = useCallback(() => {
         if (!containerEl || !innerEl || !lastBPMEl) return;
-        const { height } = innerEl.getBoundingClientRect();
+        const { height, width } = innerEl.getBoundingClientRect();
         const bottomTime = (1 - (containerEl.scrollTop + window.innerHeight) / height) * duration;
-        const threshold = 0.085;
+        const em = width / 11;
+        const threshold = 1.25;
         const { key: nextTime, valid } = time2Timers.gt(bottomTime);
-        if (valid && (nextTime - bottomTime) < threshold) {
+        if (valid && (nextTime - bottomTime) < em * threshold / height * duration) {
             lastBPMEl.style.opacity = 0;
         } else {
             lastBPMEl.style.opacity = 1;
