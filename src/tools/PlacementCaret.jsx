@@ -21,7 +21,7 @@ const useStyles = makeStyles({
         fontSize: '0.6em',
         lineHeight: 1,
         color: '#5996FF',
-        fontFamily: 'DIN',
+        fontFamily: 'D-DIN',
         fontWeight: 'normal',
     },
 });

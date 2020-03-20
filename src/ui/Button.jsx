@@ -41,11 +41,11 @@ const useStyles = makeStyles({
         justifyContent: 'center',
         backgroundColor: '#000',
         color: '#FFF',
-        fontFamily: 'DIN',
+        fontFamily: 'D-DIN',
         fontWeight: 'normal',
         fontSize: '0.6em',
         '& div': {
-            marginBottom: 2,
+            marginBottom: 0,
         }
     },
 });

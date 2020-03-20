@@ -6,3 +6,15 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+@font-face {
+  font-family: D-DIN;
+  src: url("./assets/D-DIN.otf") format("opentype");
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: D-DIN;
+  src: url("./assets/D-DIN-Bold.otf") format("opentype");
+  font-weight: bold;
+}
