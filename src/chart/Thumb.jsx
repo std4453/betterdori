@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import useDrag from '../tools/useDrag';
+import { normalizeWheel } from '../utils';
 
 const useStyles = makeStyles({
     root: {
@@ -15,7 +16,7 @@ const useStyles = makeStyles({
     },
 });
 
-function Thumb({ children, scale, music: { duration }, containerEl, innerEl }) {
+function Thumb({ children, scale, music: { duration }, containerEl, innerEl, thumbScrollSpeed }) {
     const classes = useStyles();
 
     const [thumbEl, setThumbEl] = useState(null);
@@ -32,8 +33,22 @@ function Thumb({ children, scale, music: { duration }, containerEl, innerEl }) {
     }, [containerEl, duration, innerEl, scale]);
     useDrag({ onDrag: updateScroll, onDragEnd: updateScroll, el: thumbEl });
 
+    // scale = pixels per second
+    const onWheel = useCallback((e) => {
+        if (!containerEl || !innerEl) return;
+        const { pixelY } = normalizeWheel(e.nativeEvent);
+        const { height } = innerEl.getBoundingClientRect();
+        const viewTop = containerEl.scrollTop / height * window.innerHeight;
+        const viewHeight = window.innerHeight / scale;
+        let newTop = viewTop + pixelY * thumbScrollSpeed;
+        if (newTop < 0) newTop = 0;
+        if (newTop + viewHeight > window.innerHeight) newTop = window.innerHeight - viewHeight;
+        const newScroll = newTop / window.innerHeight * height;
+        containerEl.scrollTop = newScroll;
+    }, [containerEl, innerEl, scale, thumbScrollSpeed]);
+
     return (
-        <div className={classes.root} ref={setThumbEl}>
+        <div className={classes.root} ref={setThumbEl} onWheel={onWheel}>
             {children}
         </div>
     );

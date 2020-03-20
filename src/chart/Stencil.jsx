@@ -8,6 +8,7 @@ const useStyles = makeStyles({
         left: 0,
         width: '100%',
         backgroundColor: 'rgba(0, 0, 0, 0.65)',
+        pointerEvents: 'none',
     },
 });
 

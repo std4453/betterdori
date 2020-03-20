@@ -13,6 +13,7 @@ const initial = {
     // other settings
     progressOffset: 180,
     scrollSpeed: 0.03,
+    thumbScrollSpeed: 0.027,
     scaleSpeed: 0.0005,
     minScale: 50,
     maxScale: 2000,
