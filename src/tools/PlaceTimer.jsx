@@ -15,6 +15,14 @@ function PlaceTimer({ code, innerEl, setCode, inflate, quantize, timers, setTime
         else setTimers(timers.insert(beat, { bpm }));
     }, [code, inflate, quantize, setTimers, timers]);
     useEvent(innerEl, 'click', onClick);
+    const onContextMenu = useCallback((e) => {
+        if (code !== 'timer') return;
+        const { time } = inflate(e);
+        const { beat } = quantize(time);
+        const it = timers.find(beat);
+        if (it.valid) setTimers(it.remove());
+    }, [code, inflate, quantize, setTimers, timers]);
+    useEvent(innerEl, 'contextmenu', onContextMenu);
     
     return (
         <KeyboardEventHandler handleKeys={['a']} onKeyEvent={setMyCode}/>
