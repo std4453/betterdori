@@ -13,6 +13,7 @@ import Notes from './Notes';
 import Thumb from './Thumb';
 import Stencil from './Stencil';
 import Timers from './Timers';
+import ThumbTimers from './ThumbTimers';
 
 import Player from '../tools/Player';
 import SoundFX from '../tools/SoundFX';
@@ -78,6 +79,7 @@ function Chart({ music }) {
         <div className={classes.right}>
             <Thumb {...params}>
                 <Bars {...params} division={1 / 4} thumb={true}/>
+                <ThumbTimers {...params}/>
                 <Notes {...params} thumb={true}/>
                 <Stencil {...params}/>
             </Thumb>

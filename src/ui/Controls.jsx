@@ -74,7 +74,9 @@ function Controls({ music, follow, setFollow, setDivision, code, setCode }) {
                 <Control code={code} setCode={setCode} alt="S" index={3} matchCode="placement/slide-a" icon={slide1}/>
                 <Control code={code} setCode={setCode} alt="D" index={4} matchCode="placement/slide-b" icon={slide2}/>
                 <Control code={code} setCode={setCode} alt="W" index={5} matchCode="modification/flick" icon={flick}/>
-                <Control code={code} setCode={setCode} alt="A" index={6} matchCode="timer" icon={timer}/>
+                <Control code={code} setCode={setCode} alt="A" index={6} matchCode="timer" icon={timer}>
+                    
+                </Control>
                 <Control code={code} setCode={setCode} index={7} matchCode="bars" icon={bars}>
                     <Button alt="1" onClick={setD1} icon={d1}/>
                     <Button alt="2" onClick={setD2} icon={d2}/>
