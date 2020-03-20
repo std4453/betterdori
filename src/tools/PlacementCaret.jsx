@@ -39,7 +39,7 @@ function PlacementCaret({ music: { duration }, innerEl, quantize, inflate, code 
     }, [inflate, quantize, caretEl, duration, notesCounterEl]);
     useEvent(innerEl, 'mousemove', updateCaret);
 
-    return (code.startsWith('placement/') || code.startsWith('modification/')) && (
+    return (code.startsWith('placement/') || code.startsWith('modification/') || code === 'timer') && (
         <div ref={setCaretEl} className={classes.root}>
             <div ref={setNotesCounterEl} className={classes.notesCounter}/>
         </div>
