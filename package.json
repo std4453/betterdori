@@ -13,9 +13,11 @@
     "pixi.js": "^5.2.1",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
+    "react-hook-form": "^5.2.0",
     "react-howler": "^3.7.4",
     "react-keyboard-event-handler": "^1.5.4",
-    "react-scripts": "3.4.0"
+    "react-scripts": "3.4.0",
+    "react-transition-group": "^4.3.0"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -9,6 +9,7 @@ const initial = {
     follow: false,
     division: 2,
     scale: 600,
+    bpm: 120,
 
     // other settings
     progressOffset: 180,
@@ -160,10 +161,12 @@ function useChart(music) {
         matchNotePure(notes, time2Timers, time, lane, threshold),
         [matchNotePure, notes, time2Timers]);
 
+    const [currentBPM, setCurrentBPM] = useState(initial.bpm);
+
     const params = {
         music, timers, setTimers, notes, setNotes, markers, setMarkers,
         ranges, time2Timers, time2Notes, time2Markers,
-        ...initial, division, setDivision, follow, setFollow, scale, setScale,
+        ...initial, division, setDivision, follow, setFollow, scale, setScale, currentBPM, setCurrentBPM,
         quantize, countNotes, findNotePure, findNote, forEachNote, forEachGroup, matchNotePure, matchNote,
     };
 

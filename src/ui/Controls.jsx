@@ -5,6 +5,7 @@ import Toolbar from './Toolbar';
 import Carousel from './Carousel';
 import Switch from './Switch';
 import Button from './Button';
+import { Dialog, useDialog, Sheet, Horizontal, Title, Input, Cancel, Submit } from './Dialog';
 
 import select from '../assets/select.svg';
 import single from '../assets/single.svg';
@@ -33,9 +34,18 @@ const useStyles = makeStyles({
         position: 'relative',
         fontSize: 40,
     },
+    bpm: {
+        fontSize: '0.8em',
+        lineHeight: 1,
+        color: '#000',
+        fontFamily: 'D-DIN',
+        fontWeight: 'normal',
+    },
 });
 
-function Controls({ music, follow, setFollow, setDivision, code, setCode }) {
+function Controls({
+    music, follow, setFollow, setDivision, code, setCode, currentBPM, setCurrentBPM,
+}) {
     const classes = useStyles();
     const [paused, setPausedRaw] = useState(music.paused);
     const setPaused = useCallback((paused) => {
@@ -59,13 +69,22 @@ function Controls({ music, follow, setFollow, setDivision, code, setCode }) {
         const updatePlaybackRate = () => setPlaybackRateRaw(music.playbackRate);
         music.addEventListener('ratechange', updatePlaybackRate);
         return () => music.removeEventListener('ratechange', updatePlaybackRate);
-    })
+    });
     const setD1 = useCallback(() => setDivision(1), [setDivision]);
     const setD2 = useCallback(() => setDivision(2), [setDivision]);
     const setD3 = useCallback(() => setDivision(3), [setDivision]);
     const setD4 = useCallback(() => setDivision(4), [setDivision]);
     const setD6 = useCallback(() => setDivision(6), [setDivision]);
     const setD8 = useCallback(() => setDivision(8), [setDivision]);
+    const bpmDialog = useDialog();
+    const openBPMDialog = useCallback(async () => {
+        try {
+            const { bpm } = await bpmDialog.open();
+            setCurrentBPM(bpm);
+        } catch (e) {
+            // do nothing
+        }
+    }, [bpmDialog, setCurrentBPM]);
     return (
         <div className={classes.root}>
             <Toolbar>
@@ -75,8 +94,24 @@ function Controls({ music, follow, setFollow, setDivision, code, setCode }) {
                 <Control code={code} setCode={setCode} alt="D" index={4} matchCode="placement/slide-b" icon={slide2}/>
                 <Control code={code} setCode={setCode} alt="W" index={5} matchCode="modification/flick" icon={flick}/>
                 <Control code={code} setCode={setCode} alt="A" index={6} matchCode="timer" icon={timer}>
-                    
+                    <Button onClick={openBPMDialog}>
+                        <div className={classes.bpm}>{currentBPM}</div>
+                    </Button>
                 </Control>
+                <Dialog dialog={bpmDialog}>
+                    <Sheet>
+                        <Horizontal>
+                            <div>
+                                <Title>节奏数值</Title>
+                                <Input name="bpm" defaultValue={currentBPM}/>
+                            </div>
+                            <div>
+                                <Cancel/>
+                                <Submit/>
+                            </div>
+                        </Horizontal>
+                    </Sheet>
+                </Dialog>
                 <Control code={code} setCode={setCode} index={7} matchCode="bars" icon={bars}>
                     <Button alt="1" onClick={setD1} icon={d1}/>
                     <Button alt="2" onClick={setD2} icon={d2}/>

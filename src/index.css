@@ -18,3 +18,43 @@ body {
   src: url("./assets/D-DIN-Bold.otf") format("opentype");
   font-weight: bold;
 }
+
+.fade-enter {
+  opacity: 0;
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transition: opacity 120ms linear;
+}
+
+.fade-exit {
+  opacity: 1;
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transition: opacity 120ms linear;
+}
+
+.scale-enter {
+  opacity: 0;
+  transform: scale(0.6);
+}
+
+.scale-enter-active {
+  opacity: 1;
+  transform: scale(1.0);
+  transition: opacity 120ms linear, transform 120ms cubic-bezier(0.215, 0.610, 0.355, 1);
+}
+
+.scale-exit {
+  opacity: 1;
+  transform: scale(1.0);
+}
+
+.scale-exit-active {
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 120ms linear, transform 120ms cubic-bezier(0.55, 0.055, 0.675, 0.19);
+}

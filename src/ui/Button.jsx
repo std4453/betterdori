@@ -22,12 +22,17 @@ const useStyles = makeStyles({
         '&:hover:after': {
             borderWidth: 5,
         },
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     selected: {
         backgroundColor: 'rgba(0, 0, 0, 0.06)',
     },
     icon: {
         pointerEvents: 'none',
+        height: '2em',
     },
     alt: {
         position: 'absolute',
@@ -50,7 +55,7 @@ const useStyles = makeStyles({
     },
 });
 
-function Button({ selected, onClick, alt, icon, ...props }) {
+function Button({ selected, onClick, alt, icon, children, ...props }) {
     const classes = useStyles(props);
     const [ctrl, setCtrl] = useState(false);
     useEffect(() => {
@@ -67,7 +72,8 @@ function Button({ selected, onClick, alt, icon, ...props }) {
         <div
             className={classNames(classes.root, { [classes.selected]: selected })}
             onClick={onClick}>
-            <img src={icon} alt="" className={classes.icon}/>
+            {icon && <img src={icon} alt="" className={classes.icon}/>}
+            {children}
             {ctrl && alt && <div className={classes.alt}>
                 <div>{alt}</div>
             </div>}
