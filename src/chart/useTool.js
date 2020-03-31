@@ -1,7 +1,7 @@
 import { useState } from "react"
 
 const useTool = () => {
-    const [code, setCode] = useState('player');
+    const [code, setCode] = useState('select');
     return { code, setCode };
 };
 
