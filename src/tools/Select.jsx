@@ -1,6 +1,15 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import KeyboardEventHandler from 'react-keyboard-event-handler';
+import { makeStyles } from '@material-ui/styles';
 import useDrag from './useDrag';
+
+const useStyles = makeStyles({
+    dragArea: {
+        position: 'fixed',
+        backgroundColor: 'rgba(89, 150, 255, 0.4)',
+        border: '1px solid #5996FF',
+    },
+});
 
 const clickThreshold = 10;
 const snapThreshold = 0.1;
@@ -9,11 +18,28 @@ function Select({
     code, inflate, setCode, notes, setNotes, time2Timers, matchNotePure, findNotePure,
     innerEl,
 }) {
+    const classes = useStyles();
     const setSelect = useCallback(() => setCode('select'), [setCode]);
 
-    const onDragStart = useCallback(() => {
+    const onDragStart = useCallback((_, state) => {
         if (code !== 'select') return false;
+        state.click = true;
     }, [code]);
+    const [dragArea, setDragArea] = useState(null);
+    const onDrag = useCallback((e, state) => {
+        const { startX, startY } = state;
+        const dist = Math.sqrt(Math.pow(e.clientX - startX, 2) + Math.pow(e.clientY - startY, 2));
+        if (dist > clickThreshold) state.click = false;
+        if (dragArea) {
+            dragArea.style.visibility = state.dragging ? '' : 'hidden';
+            const x1 = Math.min(e.clientX, startX), x2 = Math.max(e.clientX, startX);
+            const y1 = Math.min(e.clientY, startY), y2 = Math.max(e.clientY, startY);
+            dragArea.style.left = `${x1}px`;
+            dragArea.style.top = `${y1}px`;
+            dragArea.style.width = `${x2 - x1}px`;
+            dragArea.style.height = `${y2 - y1}px`;
+        }
+    }, [dragArea]);
     const clearSelectionPure = useCallback((notes) => {
         for (let it = notes.begin; it.valid; it.next()) {
             const { index, value: { selected = false }, value: note } = it;
@@ -34,10 +60,9 @@ function Select({
         }
         return notes;
     }, []);
-    const onDragEnd = useCallback((e, { startX, startY, shift }) => {
+    const onDragEnd = useCallback((e, { startX, startY, shift, click }) => {
         const { time, beat, lane } = inflate(e);
-        const dist = Math.sqrt(Math.pow(e.clientX - startX, 2) + Math.pow(e.clientY - startY, 2));
-        if (dist < clickThreshold) { // click
+        if (click) { // click
             let tmpNotes = notes;
             if (!shift) tmpNotes = clearSelectionPure(tmpNotes);
             const matched = matchNotePure(notes, time2Timers, time, lane, snapThreshold);
@@ -54,15 +79,17 @@ function Select({
             const beat2 = beat, lane2 = lane;
             // STAR BEAT ~星の鼓動~
             const startBeat = Math.min(beat1, beat2), endBeat = Math.max(beat1, beat2);
-            const startLane = Math.min(lane1, lane2), endLane = Math.max(lane2, lane2);
+            const startLane = Math.min(lane1, lane2), endLane = Math.max(lane1, lane2);
             tmpNotes = toggleNotesPure(tmpNotes, startBeat, endBeat, startLane, endLane);
             setNotes(tmpNotes);
         }
-    }, [clearSelectionPure, findNotePure, inflate, matchNotePure, notes, setNotes, time2Timers, toggleNotesPure]);
-    useDrag({ onDragStart, onDragEnd, el: innerEl });
+        if (dragArea) dragArea.style.visibility = 'hidden';
+    }, [clearSelectionPure, dragArea, findNotePure, inflate, matchNotePure, notes, setNotes, time2Timers, toggleNotesPure]);
+    useDrag({ onDragStart, onDrag, onDragEnd, el: innerEl });
     
     return <>
         <KeyboardEventHandler handleKeys={['v']} onKeyEvent={setSelect}/>
+        <div className={classes.dragArea} ref={setDragArea}/>
     </>;
 }
 
