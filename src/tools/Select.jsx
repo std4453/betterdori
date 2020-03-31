@@ -121,9 +121,31 @@ function Select({
         }
         return notes;
     }, []);
-    const onDragEnd = useCallback((e, { startX, startY, shift, click, move, startIndex }) => {
+    const onDragEnd = useCallback((e, { right, startX, startY, shift, click, move, startIndex }) => {
         const { time, beat, lane } = inflate(e);
-        if (click) {
+        // if right button is pressed, under all circumstances, no matter
+        // whether click or move is true, we delete all the selected notes.
+        // if the last note is not selected, we clear the current selection
+        // and select that note, just as in moves.
+        // A right drag would not be meaningful, the behavior is undefined.
+        if (right) {
+            const matched = matchNotePure(notes, time2Timers, time, lane, snapThreshold);
+            if (matched) {
+                let tmpSource = notes;
+                const { index, value: { selected } } = findNotePure(tmpSource, matched.beat, matched.lane);
+                if (!selected) {
+                    tmpSource = clearSelectionPure(tmpSource);
+                    const newIt = tmpSource.at(index);
+                    tmpSource = newIt.update({ ...newIt.value, selected: true });
+                }
+                let tmpNotes = createTree();
+                for (let it = tmpSource.begin; it.valid; it.next()) {
+                    const { key: noteBeat, value: note, value: { selected } } = it;
+                    if (!selected) tmpNotes = tmpNotes.insert(noteBeat, note);
+                }
+                setNotes(tmpNotes);
+            }
+        } else if (click) {
             // if drag distance is too short that it's considered a click,
             // we treat it as if the user is selecting a single note
             let tmpNotes = notes;
