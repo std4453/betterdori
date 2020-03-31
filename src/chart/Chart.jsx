@@ -25,6 +25,7 @@ import Divisions from '../tools/Divisions';
 import PlacementCaret from '../tools/PlacementCaret';
 import Modification from '../tools/Modification';
 import PlaceTimer from '../tools/PlaceTimer';
+import Select from '../tools/Select';
 
 const useStyles = makeStyles({
     middle: {
@@ -73,6 +74,7 @@ function Chart({ music }) {
                 <Divisions {...params}/>
                 <Modification  {...params}/>
                 <PlaceTimer {...params}/>
+                <Select {...params}/>
             </Score>
             <Controls music={music} {...params}/>
         </div>

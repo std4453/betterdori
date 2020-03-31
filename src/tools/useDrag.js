@@ -5,7 +5,7 @@ const interpolateInterval = 15;
 const useDrag = ({ onDragStart, onDrag, onDragEnd, el }) => {
     const states = useMemo(() => ({
         left: false, right: false, dragging: false, shift: false,
-        lestX: 0, lastY: 0,
+        lestX: 0, lastY: 0, startX: 0, startY: 0,
     }), []);
 
     const onMouseDown = useCallback((e) => {
@@ -14,6 +14,8 @@ const useDrag = ({ onDragStart, onDrag, onDragEnd, el }) => {
         states.shift = e.shiftKey;
         states.lastX = e.clientX;
         states.lastY = e.clientY;
+        states.startX = e.clientX;
+        states.startY = e.clientY;
         if (!states.dragging) {
             states.dragging = true;
             if (onDragStart) {

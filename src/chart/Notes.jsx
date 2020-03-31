@@ -2,6 +2,7 @@ import { makeStyles } from '@material-ui/styles';
 import classNames from 'classnames';
 import React, { useMemo } from 'react';
 import focus from '../assets/focus.svg';
+import cross from '../assets/cross.svg';
 
 const useStyles = makeStyles({
     root: {
@@ -22,6 +23,13 @@ const useStyles = makeStyles({
         '&$thumb': {
             transform: 'scale(0.5)',
         },
+        boxSizing: 'border-box',
+        '&$selected': {
+            border: '4px solid #5996FF',
+        },
+        '&$middle': {
+            border: 'none',
+        }
     },
     focusable: {
         cursor: 'pointer',
@@ -72,6 +80,9 @@ const useStyles = makeStyles({
             borderBottom: '3px solid #7ADEAE',
             marginBottom: -1.5,
         },
+        '&$middleSelected:after': {
+            borderBottom: '3px solid #5996FF',
+        },
         '&$thumb:after': {
             opacity: 0.6,
         },
@@ -91,15 +102,30 @@ const useStyles = makeStyles({
         display: 'flex',
     },
     thumb: {},
+    selected: {
+        position: 'absolute',
+        height: '100%',
+        left: 0,
+        top: 0,
+        pointerEvents: 'none',
+        userSelect: 'none',
+        zIndex: 2,
+    },
+    middleSelected: {},
 });
 
-function Note({ time, duration, lane, note: type, flick, start, end, code, thumb }) {
+function Note({ time, duration, lane, note: type, flick, start, end, code, thumb, selected }) {
     const classes = useStyles();
 
     const single = type === 'Single';
     const slide = type === 'Slide';
     const full = start || end;
-    const focusable = !thumb && (code.startsWith('placement/') || code.startsWith('modification/'));
+    const focusable = !thumb
+        && (code.startsWith('placement/')
+        || code.startsWith('modification/')
+        || code === 'select');
+    const middle = slide && !full;
+    const selecting = code === 'select';
 
     return (
         <div
@@ -107,9 +133,10 @@ function Note({ time, duration, lane, note: type, flick, start, end, code, thumb
                 [classes.single]: single && !flick,
                 [classes.slide]: slide && full && !flick,
                 [classes.flick]: flick,
-                [classes.middle]: slide && !full,
+                [classes.middle]: middle,
                 [classes.focusable]: focusable,
                 [classes.thumb]: thumb,
+                [classes.middleSelected]: middle && selected && selecting,
             })}
             style={{
                 bottom: `${time / duration * 100}%`,
@@ -119,6 +146,10 @@ function Note({ time, duration, lane, note: type, flick, start, end, code, thumb
                 className={classes.focus}
                 alt="focus"
                 src={focus}/>
+            {!thumb && selected && !middle && selecting && <img
+                className={classes.selected}
+                alt="selected"
+                src={cross}/>}
         </div>
     );
 }
