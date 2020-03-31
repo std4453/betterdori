@@ -155,7 +155,11 @@ function useChart(music) {
             }
         }, beat - threshold, beat + threshold);
         if (isNaN(minLane)) return null;
-        else return { beat: minBeat, lane: minLane };
+        else return {
+            beat: minBeat,
+            lane: minLane,
+            time: startTime + (minBeat - startBeat) / bpm * 60,
+        };
     }, []);
     const matchNote = useCallback((time, lane, threshold) =>
         matchNotePure(notes, time2Timers, time, lane, threshold),

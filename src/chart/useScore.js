@@ -23,10 +23,18 @@ const useScore = ({ music: { duration }, time2Timers }) => {
         else if (position > height) viewTop = height - window.innerHeight;
         if (containerEl) containerEl.scrollTop = viewTop;
     }, [containerEl, innerEl]);
+
+    const deflate = useCallback(({ time, lane }) => {
+        const { x, y, width, height } = innerEl.getBoundingClientRect();
+        return {
+            x: x + (lane + 2.5) / 11 * width,
+            y: y + height * (1 - time / duration),
+        };
+    }, [duration, innerEl]);
     
     const params = {
         containerEl, setContainerEl, innerEl, setInnerEl,
-        inflate, keepInView,
+        inflate, keepInView, deflate,
     };
 
     return params;
