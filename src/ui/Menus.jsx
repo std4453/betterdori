@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/styles';
 import Toolbar from './Toolbar';
 import Button from './Button';
 import { emptyScore } from '../chart/storage';
-import { Dialog, useDialog, Sheet, Horizontal, Title, Text, Cancel, Submit } from './Dialog';
+import { Dialog, useDialog, Sheet, Horizontal, Input, Title, Text, Cancel, Submit } from './Dialog';
 
 import settings from '../assets/settings.svg';
 import hamburger from '../assets/hamburger.svg';
@@ -24,9 +24,13 @@ const useStyles = makeStyles({
         fontFamily: 'D-DIN',
         fontWeight: 'normal',
     },
+    url: {
+        width: `${560 / 34}em`,
+        marginRight: `${80 / 34}em`,
+    },
 });
 
-function Menus({ setScore }) {
+function Menus({ setScore, musicURL, setMusicURL }) {
     const classes = useStyles();
     const deleteDialog = useDialog();
     const openDeleteDialog = useCallback(async () => {
@@ -41,6 +45,15 @@ function Menus({ setScore }) {
             // do nothing
         }
     }, [deleteDialog, setScore]);
+    const musicURLDialog = useDialog();
+    const openMusicURLDialog = useCallback(async () => {
+        try {
+            const { url } = await musicURLDialog.open();
+            setMusicURL(url);
+        } catch (e) {
+            // do nothing
+        }
+    }, [musicURLDialog, setMusicURL]);
     return (
         <div className={classes.root}>
             <Toolbar>
@@ -60,7 +73,21 @@ function Menus({ setScore }) {
                         </Horizontal>
                     </Sheet>
                 </Dialog>
-                <Button icon={album}/>
+                <Button icon={album} onClick={openMusicURLDialog}/>
+                <Dialog dialog={musicURLDialog}>
+                    <Sheet>
+                        <Horizontal>
+                            <div>
+                                <Title>音频地址</Title>
+                                <Input name="url" defaultValue={musicURL} classes={{ input: classes.url }}/>
+                            </div>
+                            <div>
+                                <Cancel/>
+                                <Submit/>
+                            </div>
+                        </Horizontal>
+                    </Sheet>
+                </Dialog>
                 <Button icon={exportIcon}/>
                 <Button icon={importIcon}/>
                 <Button icon={settings}/>

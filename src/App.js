@@ -1,9 +1,11 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { makeStyles } from '@material-ui/styles';
-import test_music from './assets/test_music.mp3';
-import Editor from './Editor';
+
 import Menus from './ui/Menus';
 import { load } from './chart/storage';
+import useEvent from './tools/useEvent';
+import Chart from './chart/Chart';
+import Loading from './Loading';
 
 const useStyles = makeStyles({
   root: {
@@ -25,16 +27,40 @@ const useStyles = makeStyles({
 
 function App() {
   const classes = useStyles();
+
   const initialScore = useMemo(() => load(), []);
   const [score, setScore] = useState(initialScore);
-  const musicURL = test_music;
-  const params = { score, setScore, musicURL };
+
+  const [musicURL, setMusicURL] = useState(localStorage.getItem('music'));
+  useEffect(() => {
+    if (musicURL) localStorage.setItem('music', musicURL);
+  }, [musicURL]);
+
+  const music = useMemo(() => new Audio(), []);
+  useEffect(() => {
+    music.src = musicURL;
+    music.load();
+  }, [music, musicURL]);
+  const [musicLoaded, setMusicLoaded] = useState(false);
+  const onDurationChange = useCallback(() => setMusicLoaded(music.duration > 0), [music]);
+  useEvent(music, 'durationchange', onDurationChange);
+  const onEmptied = useCallback(() => setMusicLoaded(false), []);
+  useEvent(music, 'emptied', onEmptied);
+
+  const params = { score, setScore, musicURL, setMusicURL, music, musicLoaded };
+
   return (
     <div className={classes.root}>
       <div className={classes.left}>
         <Menus {...params}/>
       </div>
-      <Editor {...params}/>
+      {musicLoaded ? (
+        <Chart {...params}/>
+      ) : (
+        <Loading>
+          {musicURL === null ? '请先选择歌曲' : '加载中，请稍候'}
+        </Loading>
+      )}
     </div>
   );
 }

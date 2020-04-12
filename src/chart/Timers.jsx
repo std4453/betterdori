@@ -113,7 +113,10 @@ function Timers({ time2Timers, music: { duration }, containerEl, innerEl }) {
     const updateTimerEls = useCallback(() => {
         if (!containerEl || !innerEl || !lastBPMEl) return;
         const { height, width } = innerEl.getBoundingClientRect();
-        const bottomTime = (1 - (containerEl.scrollTop + window.innerHeight) / height) * duration;
+        // on music change, duration will become 0 suddenly, before React could even
+        // 'react' on the change, whicl will make bottomTime -Infinity, crashing the
+        // application bu timer2Timers.le(bottomTime) returning nothing.
+        const bottomTime = Math.max((1 - (containerEl.scrollTop + window.innerHeight) / height) * duration, 0);
         const em = width / 11;
         const threshold = 1.25;
         const { key: nextTime, valid } = time2Timers.gt(bottomTime);

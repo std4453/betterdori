@@ -192,9 +192,10 @@ function Title({ children }) {
     );
 }
 
-function Input(props) {
-    const classes = useStyles();
+function Input({ classes: inheritClasses, ...props }) {
+    const classes = useStyles({ classes: inheritClasses });
     const { form: { register } } = useContext(DialogContext);
+    console.log(classes.input);
     return (
         <Cell
             el="input"
