@@ -1,6 +1,7 @@
 import { useMemo, useState, useCallback } from 'react';
 import createTree from 'functional-red-black-tree';
 import testScore from '../assets/test_score.json';
+import { load, useAutoSave } from './storage';
 
 const initial = {
     score: testScore,
@@ -21,25 +22,27 @@ const initial = {
 };
 
 function useChart(music) {
+    const initialScore = useMemo(() => load(), []);
     const initialTimers = useMemo(() => {
         let res = createTree();
-        for (const { type, cmd, beat, bpm } of initial.score) {
+        for (const { type, cmd, beat, bpm } of initialScore) {
             if (type !== 'System' || cmd !== 'BPM') continue;
             res = res.insert(beat, { bpm });
         }
         return res;
-    }, []);
+    }, [initialScore]);
     const initialNotes = useMemo(() => {
         let res = createTree();
-        for (const { type, beat, lane, ...rest } of initial.score) {
+        for (const { type, beat, lane, ...rest } of initialScore) {
             if (type !== 'Note') continue;
             res = res.insert(beat, { ...rest, lane: lane - 1 });
         }
         return res;
-    }, []);
+    }, [initialScore]);
     const [timers, setTimers] = useState(initialTimers);
     const [notes, setNotes] = useState(initialNotes);
     const [markers, setMarkers] = useState(createTree());
+    useAutoSave({ timers, notes });
     
     const ranges = useMemo(() => {
         const res = [];
