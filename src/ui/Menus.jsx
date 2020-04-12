@@ -8,6 +8,9 @@ import { Dialog, useDialog, Sheet, Horizontal, Title, Text, Cancel, Submit } fro
 import settings from '../assets/settings.svg';
 import hamburger from '../assets/hamburger.svg';
 import deleteIcon from '../assets/delete.svg';
+import album from '../assets/album.svg';
+import exportIcon from '../assets/export.svg';
+import importIcon from '../assets/import.svg';
 
 const useStyles = makeStyles({
     root: {
@@ -57,6 +60,9 @@ function Menus({ setScore }) {
                         </Horizontal>
                     </Sheet>
                 </Dialog>
+                <Button icon={album}/>
+                <Button icon={exportIcon}/>
+                <Button icon={importIcon}/>
                 <Button icon={settings}/>
             </Toolbar>
         </div>
