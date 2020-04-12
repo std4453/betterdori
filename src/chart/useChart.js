@@ -1,12 +1,9 @@
 import { useMemo, useState, useCallback } from 'react';
 import createTree from 'functional-red-black-tree';
-import testScore from '../assets/test_score.json';
 import { useAutoSave } from './storage';
 import useResettableState from './useResettableState';
 
 const initial = {
-    score: testScore,
-
     // initial values
     follow: false,
     division: 2,
