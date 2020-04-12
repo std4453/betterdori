@@ -1,20 +1,21 @@
 import { useEffect, useMemo } from "react";
 
+const emptyScore = [{
+    type: 'System',
+    cmd: 'BPM',
+    beat: 0,
+    bpm: 120,
+}];
+
 const load = () => {
     const item = localStorage.getItem('score');
-    if (item === null) {
-        return [{
-            type: 'System',
-            cmd: 'BPM',
-            beat: 0,
-            bpm: 120,
-        }]; // dummy score, to avoid crashes
-    } else return JSON.parse(item);
+    if (item === null) return emptyScore;
+    else return JSON.parse(item);
 };
 
 const save = (data) => {
     localStorage.setItem('score', JSON.stringify(data));
-}
+};
 
 const createSubmit = () => {
     let timers = null, notes = null;
@@ -67,4 +68,4 @@ const useAutoSave = ({ timers, notes }) => {
     }, [notes, submit, timers]);
 };
 
-export { load, save, useAutoSave };
+export { emptyScore, load, save, useAutoSave };

@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { makeStyles } from '@material-ui/styles';
+import test_music from './assets/test_music.mp3';
 import Editor from './Editor';
+import Menus from './ui/Menus';
+import { load } from './chart/storage';
 
 const useStyles = makeStyles({
   root: {
@@ -22,12 +25,16 @@ const useStyles = makeStyles({
 
 function App() {
   const classes = useStyles();
+  const initialScore = useMemo(() => load(), []);
+  const [score, setScore] = useState(initialScore);
+  const musicURL = test_music;
+  const params = { score, setScore, musicURL };
   return (
     <div className={classes.root}>
       <div className={classes.left}>
-
+        <Menus {...params}/>
       </div>
-      <Editor/>
+      <Editor {...params}/>
     </div>
   );
 }

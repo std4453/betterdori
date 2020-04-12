@@ -84,6 +84,13 @@ const useStyles = makeStyles({
         paddingLeft: `${10 / 34}em`,
         width: `${320 / 34}em`,
     },
+    text: {
+        fontSize: `${32 / 60}em`,
+        lineHeight: `${50 / 32}em`,
+        height: `${50 / 32}em`,
+        fontWeight: 'normal',
+        paddingRight: `${60 / 32}em`,
+    },
     button: {
         width: `${120 / 60}em`,
         height: `${50 / 60}em`,
@@ -197,6 +204,15 @@ function Input(props) {
     );
 }
 
+function Text({ children }) {
+    const classes = useStyles();
+    return (
+        <Cell classes={{ cell: classes.text }}>
+            {children}
+        </Cell>
+    );
+}
+
 function Cancel(props) {
     const classes = useStyles();
     const { reject } = useContext(DialogContext);
@@ -216,4 +232,4 @@ function Submit(props) {
     );
 }
 
-export { useDialog, Dialog, Sheet, Horizontal, Cell, Title, Input, Cancel, Submit };
+export { useDialog, Dialog, Sheet, Horizontal, Cell, Title, Input, Text, Cancel, Submit };
