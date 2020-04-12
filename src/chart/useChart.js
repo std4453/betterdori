@@ -1,7 +1,8 @@
 import { useMemo, useState, useCallback } from 'react';
 import createTree from 'functional-red-black-tree';
 import testScore from '../assets/test_score.json';
-import { load, useAutoSave } from './storage';
+import { useAutoSave } from './storage';
+import useResettableState from './useResettableState';
 
 const initial = {
     score: testScore,
@@ -21,26 +22,25 @@ const initial = {
     maxScale: 2000,
 };
 
-function useChart(music) {
-    const initialScore = useMemo(() => load(), []);
+function useChart({ music, score }) {
     const initialTimers = useMemo(() => {
         let res = createTree();
-        for (const { type, cmd, beat, bpm } of initialScore) {
+        for (const { type, cmd, beat, bpm } of score) {
             if (type !== 'System' || cmd !== 'BPM') continue;
             res = res.insert(beat, { bpm });
         }
         return res;
-    }, [initialScore]);
+    }, [score]);
     const initialNotes = useMemo(() => {
         let res = createTree();
-        for (const { type, beat, lane, ...rest } of initialScore) {
+        for (const { type, beat, lane, ...rest } of score) {
             if (type !== 'Note') continue;
             res = res.insert(beat, { ...rest, lane: lane - 1 });
         }
         return res;
-    }, [initialScore]);
-    const [timers, setTimers] = useState(initialTimers);
-    const [notes, setNotes] = useState(initialNotes);
+    }, [score]);
+    const [timers, setTimers] = useResettableState(initialTimers);
+    const [notes, setNotes] = useResettableState(initialNotes);
     const [markers, setMarkers] = useState(createTree());
     useAutoSave({ timers, notes });
     

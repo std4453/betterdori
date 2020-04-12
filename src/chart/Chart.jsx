@@ -46,10 +46,10 @@ const useStyles = makeStyles({
     },
 });
 
-function Chart({ music }) {
+function Chart({ music, score }) {
     const classes = useStyles();
 
-    const chartParams = useChart(music);
+    const chartParams = useChart({ music, score });
     const scoreParams = useScore(chartParams);
     const toolParams = useTool();
     const params = { music, ...chartParams, ...scoreParams, ...toolParams };
