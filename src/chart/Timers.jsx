@@ -125,7 +125,9 @@ function Timers({ time2Timers, music: { duration }, containerEl, innerEl }) {
         } else {
             lastBPMEl.style.opacity = 1;
             const { value: { bpm } } = time2Timers.le(bottomTime);
-            lastBPMEl.innerHTML = `${bpm}`;
+            if (lastBPMEl.innerHTML !== `${bpm}`) {
+                lastBPMEl.innerHTML = `${bpm}`;
+            }
         }
     }, [containerEl, duration, innerEl, lastBPMEl, time2Timers]);
     useFrame(updateTimerEls);

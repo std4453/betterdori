@@ -10,6 +10,7 @@ const useStyles = makeStyles({
         height: '100%',
         backgroundColor: '#000000',
         overflow: 'hidden',
+        willChange: 'scroll-position',
     },
     inner: {
         position: 'absolute',
@@ -45,6 +46,8 @@ function Score({
             if (newScroll < 0) newScroll = 0;
             if (newScroll + window.innerHeight > newHeight) newScroll = newHeight - window.innerHeight;
             containerEl.scrollTop = newScroll;
+            containerEl.style.setProperty('--score-second', `${newScale}px`);
+            containerEl.style.setProperty('--score-percent', `${newScale * music.duration / 100}px`);
             setScale(newScale);
         } else {
             const height = scale * music.duration;

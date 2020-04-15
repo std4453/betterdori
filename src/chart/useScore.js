@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 
-const useScore = ({ music: { duration }, time2Timers }) => {
+const useScore = ({ music: { duration }, time2Timers, scale }) => {
     const [containerEl, setContainerEl] = useState(null);
     const [innerEl, setInnerEl] = useState(null);
 
@@ -17,12 +17,12 @@ const useScore = ({ music: { duration }, time2Timers }) => {
     }, [duration, innerEl, time2Timers]);
 
     const keepInView = useCallback((position) => {
-        const height = innerEl.getBoundingClientRect().height;
+        const height = scale * duration;
         let viewTop = position - window.innerHeight;
         if (viewTop < 0) viewTop = 0;
         else if (position > height) viewTop = height - window.innerHeight;
         if (containerEl) containerEl.scrollTop = viewTop;
-    }, [containerEl, innerEl]);
+    }, [containerEl, duration, scale]);
 
     const deflate = useCallback(({ time, lane }) => {
         const { x, y, width, height } = innerEl.getBoundingClientRect();
