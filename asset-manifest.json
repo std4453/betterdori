@@ -1,17 +1,17 @@
 {
   "files": {
     "main.css": "/betterdori/static/css/main.2ab15433.chunk.css",
-    "main.js": "/betterdori/static/js/main.b9ac029d.chunk.js",
-    "main.js.map": "/betterdori/static/js/main.b9ac029d.chunk.js.map",
+    "main.js": "/betterdori/static/js/main.ce72b09c.chunk.js",
+    "main.js.map": "/betterdori/static/js/main.ce72b09c.chunk.js.map",
     "runtime-main.js": "/betterdori/static/js/runtime-main.16a60e78.js",
     "runtime-main.js.map": "/betterdori/static/js/runtime-main.16a60e78.js.map",
-    "static/js/2.fa8a2de0.chunk.js": "/betterdori/static/js/2.fa8a2de0.chunk.js",
-    "static/js/2.fa8a2de0.chunk.js.map": "/betterdori/static/js/2.fa8a2de0.chunk.js.map",
+    "static/js/2.ca251faf.chunk.js": "/betterdori/static/js/2.ca251faf.chunk.js",
+    "static/js/2.ca251faf.chunk.js.map": "/betterdori/static/js/2.ca251faf.chunk.js.map",
     "index.html": "/betterdori/index.html",
-    "precache-manifest.57be1da1fc062c019fd45b002ba24559.js": "/betterdori/precache-manifest.57be1da1fc062c019fd45b002ba24559.js",
+    "precache-manifest.bc8a4d3910a52f08725622184a248fd6.js": "/betterdori/precache-manifest.bc8a4d3910a52f08725622184a248fd6.js",
     "service-worker.js": "/betterdori/service-worker.js",
     "static/css/main.2ab15433.chunk.css.map": "/betterdori/static/css/main.2ab15433.chunk.css.map",
-    "static/js/2.fa8a2de0.chunk.js.LICENSE.txt": "/betterdori/static/js/2.fa8a2de0.chunk.js.LICENSE.txt",
+    "static/js/2.ca251faf.chunk.js.LICENSE.txt": "/betterdori/static/js/2.ca251faf.chunk.js.LICENSE.txt",
     "static/media/index.css": "/betterdori/static/media/D-DIN.d68d8669.otf",
     "static/media/album.svg": "/betterdori/static/media/album.5f063155.svg",
     "static/media/bars.svg": "/betterdori/static/media/bars.04bc19f8.svg",
@@ -31,7 +31,6 @@
     "static/media/follow.svg": "/betterdori/static/media/follow.f06e8e66.svg",
     "static/media/hamburger.svg": "/betterdori/static/media/hamburger.833119f1.svg",
     "static/media/import.svg": "/betterdori/static/media/import.f76106f8.svg",
-    "static/media/marker.svg": "/betterdori/static/media/marker.0fccf3e6.svg",
     "static/media/pause.svg": "/betterdori/static/media/pause.9cf9cdb6.svg",
     "static/media/play.svg": "/betterdori/static/media/play.aa3ead50.svg",
     "static/media/player.svg": "/betterdori/static/media/player.07060722.svg",
@@ -50,8 +49,8 @@
   },
   "entrypoints": [
     "static/js/runtime-main.16a60e78.js",
-    "static/js/2.fa8a2de0.chunk.js",
+    "static/js/2.ca251faf.chunk.js",
     "static/css/main.2ab15433.chunk.css",
-    "static/js/main.b9ac029d.chunk.js"
+    "static/js/main.ce72b09c.chunk.js"
   ]
 }

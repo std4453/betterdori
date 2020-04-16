@@ -1,23 +1,23 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "0f13f5bf3efeb510e844279aaae705d7",
+    "revision": "f266103e335f983547554158de379db6",
     "url": "/betterdori/index.html"
   },
   {
-    "revision": "6117a6483cd2a9277fe1",
+    "revision": "367ba227bdb97a949d90",
     "url": "/betterdori/static/css/main.2ab15433.chunk.css"
   },
   {
-    "revision": "ed3a1b2b96546038165f",
-    "url": "/betterdori/static/js/2.fa8a2de0.chunk.js"
+    "revision": "2456183730985a421468",
+    "url": "/betterdori/static/js/2.ca251faf.chunk.js"
   },
   {
     "revision": "df26508b26b9ba707c90907619d555f1",
-    "url": "/betterdori/static/js/2.fa8a2de0.chunk.js.LICENSE.txt"
+    "url": "/betterdori/static/js/2.ca251faf.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "6117a6483cd2a9277fe1",
-    "url": "/betterdori/static/js/main.b9ac029d.chunk.js"
+    "revision": "367ba227bdb97a949d90",
+    "url": "/betterdori/static/js/main.ce72b09c.chunk.js"
   },
   {
     "revision": "d7b1ed55a3b314675ef5",
@@ -102,10 +102,6 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
     "revision": "f76106f8ecd05fc57e655c3c9493da08",
     "url": "/betterdori/static/media/import.f76106f8.svg"
-  },
-  {
-    "revision": "0fccf3e6c54afc7d3f9278f9860144e4",
-    "url": "/betterdori/static/media/marker.0fccf3e6.svg"
   },
   {
     "revision": "9cf9cdb6474ed9ff0024ad77218db4d8",
