@@ -24,19 +24,17 @@ const useStyles = makeStyles({
 
 function Score({
     music, scale, setScale, scaleSpeed, minScale, maxScale, scrollSpeed,
-    containerEl, setContainerEl, setInnerEl, children, scrollRef,
+    setContainerEl, setInnerEl, children, scrollRef,
 }) {
     const classes = useStyles();
 
     // scale = pixels per second
     const onWheel = useCallback((e) => {
-        if (!containerEl) return;
         const { pixelY } = normalizeWheel(e.nativeEvent);
         if (e.ctrlKey) { // scaling
             const height = scale * music.duration;
             // scaling keeps the cursor unmoved, that is, 
             const ratio = (e.clientY + scrollRef.current) / height;
-            // const ratio = (e.clientY + containerEl.scrollTop) / height;
             // scale changes on a proportional basis, a same scroll distance
             // results in a same proportion of scale change.
             let newScale = scale * (1 - pixelY * scaleSpeed);
@@ -48,23 +46,18 @@ function Score({
             if (newScroll < 0) newScroll = 0;
             if (newScroll + window.innerHeight > newHeight) newScroll = newHeight - window.innerHeight;
             scrollRef.current = newScroll;
-            // containerEl.scrollTop = newScroll;
-            containerEl.style.setProperty('--score-second', `${newScale}px`);
-            containerEl.style.setProperty('--score-percent', `${newScale * music.duration / 100}px`);
             setScale(newScale);
         } else {
             const height = scale * music.duration;
             // scroll changes proportional to scale, a same scroll distance
             // results in a same scroll change measured in *beats*. 
             let newScroll = scrollRef.current + pixelY * scrollSpeed * Math.sqrt(scale);
-            // let newScroll = containerEl.scrollTop + pixelY * scrollSpeed * Math.sqrt(scale);
             // keep whole score in viewport
             if (newScroll < 0) newScroll = 0;
             if (newScroll + window.innerHeight > height) newScroll = height - window.innerHeight;
             scrollRef.current = newScroll;
-            // containerEl.scrollTop = newScroll;
         }
-    }, [containerEl, scale, music.duration, scrollRef, scaleSpeed, minScale, maxScale, setScale, scrollSpeed]);
+    }, [scale, music.duration, scrollRef, scaleSpeed, minScale, maxScale, setScale, scrollSpeed]);
     // prevent default ctrl+wheel zoom, for details about the { passive: false } option
     // in addEventListener, see https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener
     useEffect(() => {
