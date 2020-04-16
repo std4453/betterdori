@@ -258,6 +258,15 @@ function renderTimers(
     if (valid && (nextTime - bottomTime) >= laneWidth * threshold / scale) {
         const { value: { bpm } } = time2Timers.le(bottomTime);
         ctx.fillText(`${bpm}`, (9 + 0.15) * laneWidth, window.innerHeight - 0.36 * laneWidth);
+        ctx.beginPath();
+        const cx = (9 + 0.55) * laneWidth;
+        const cy = window.innerHeight - 0.14 * laneWidth;
+        // console.log(cx, cy);
+        ctx.moveTo(cx - 5, cy - 3);
+        ctx.lineTo(cx + 5, cy - 3);
+        ctx.lineTo(cx, cy + 2);
+        ctx.closePath();
+        ctx.fill();
     }
 
     ctx.strokeStyle = '#FFCD18';
@@ -269,7 +278,7 @@ function renderTimers(
         ctx.moveTo(2 * laneWidth, cy);
         ctx.lineTo(9 * laneWidth, cy);
         ctx.stroke();
-        ctx.fillText(`${bpm}`, (9 + 0.15) * laneWidth, cy + 0.3 * laneWidth);
+        ctx.fillText(`${bpm}`, (9 + 0.15) * laneWidth, cy + 0.2 * laneWidth);
     });
 }
 
