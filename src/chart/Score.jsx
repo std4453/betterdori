@@ -20,8 +20,16 @@ const useStyles = makeStyles({
     },
 });
 
+function updateView(
+    { code, music: { duration, currentTime, paused }, scaleRef: { current: scale }, progressOffset, keepInView, follow },
+) {
+    if (code !== 'player') return;
+    const progress = (duration - currentTime) * scale;
+    if (follow && !paused) keepInView(progress + progressOffset);
+}
+
 function renderBars(
-    { scrollRef: { current: scroll }, music: { duration }, scale, bars, rect: { width } },
+    { scrollRef: { current: scroll }, music: { duration }, scaleRef: { current: scale }, bars, rect: { width } },
     { ctx, startTime, endTime },
 ) {
     for (const { time, major } of bars) {
@@ -42,7 +50,7 @@ function renderBars(
 }
 
 function renderNotes(
-    { rect: { width }, scrollRef: { current: scroll }, music: { duration }, scale, code, time2Notes },
+    { rect: { width }, scrollRef: { current: scroll }, music: { duration }, scaleRef: { current: scale }, code, time2Notes },
     { ctx, startTime, endTime },
 ) {
     time2Notes.forEach((time, { lane, note: type, flick, start, end, thumb, selected }) => {
@@ -120,7 +128,7 @@ function renderNotes(
 }
 
 function renderTapLines(
-    { rect: { width }, scrollRef: { current: scroll }, music: { duration }, scale, tapLines },
+    { rect: { width }, scrollRef: { current: scroll }, music: { duration }, scaleRef: { current: scale }, tapLines },
     { ctx, startTime, endTime },
 ) {
     for (const { time, minLane, maxLane } of tapLines) {
@@ -139,7 +147,7 @@ function renderTapLines(
 }
 
 function renderSnakes(
-    { rect: { width }, scrollRef: { current: scroll }, music: { duration }, scale, snakes },
+    { rect: { width }, scrollRef: { current: scroll }, music: { duration }, scaleRef: { current: scale }, snakes },
     { ctx, startTime, endTime },
 ) {
     for (const { x0, x1, y0, y1 } of snakes) {
@@ -178,7 +186,7 @@ function renderLanes(
 }
 
 function renderProgress(
-    { music: { duration, currentTime }, scale, code, scrollRef: { current: scroll }, rect: { width } },
+    { music: { duration, currentTime }, scaleRef: { current: scale }, code, scrollRef: { current: scroll }, rect: { width } },
     { ctx },
 ) {
     if (code !== 'player') return;
@@ -192,7 +200,7 @@ function renderProgress(
 }
 
 function renderPlacementCaret(
-    { quantize, rect: { width }, music: { duration }, scale, scrollRef: { current: scroll }, code },
+    { quantize, rect: { width }, music: { duration }, scaleRef: { current: scale }, scrollRef: { current: scroll }, code },
     { ctx, mouse: { time } },
 ) {
     if (!code.startsWith('placement/') && !code.startsWith('modification/') && code !== 'timer') return;
@@ -214,7 +222,7 @@ function renderPlacementCaret(
 }
 
 function renderPlayerCaret(
-    { rect: { width }, scrollRef: { current: scroll }, scale, music: { duration }, code, countNotes },
+    { rect: { width }, scrollRef: { current: scroll }, scaleRef: { current: scale }, music: { duration }, code, countNotes },
     { ctx, mouse: { time } },
 ) {
     if (code !== 'player') return;
@@ -235,7 +243,7 @@ function renderPlayerCaret(
 }
 
 function renderTimers(
-    { time2Timers, scrollRef: { current: scroll }, music: { duration }, scale, rect: { width } },
+    { time2Timers, scrollRef: { current: scroll }, music: { duration }, scaleRef: { current: scale }, rect: { width } },
     { ctx, startTime, endTime },
 ) {
     const laneWidth = width / 11;
@@ -266,7 +274,7 @@ function renderTimers(
 }
 
 function Score(props) {
-    const { scale, setContainerEl, scrollRef, music: { duration }, inflate, mouseRef } = props;
+    const { scaleRef, setContainerEl, scrollRef, music: { duration }, inflate, mouseRef } = props;
 
     const classes = useStyles();
 
@@ -290,10 +298,12 @@ function Score(props) {
         if (!ctx || !canvas) return;
         
         const { width, height } = canvas;
-        const endTime = duration - scrollRef.current / scale;
-        const startTime = Math.max(0, endTime - height / scale);
+        const endTime = duration - scrollRef.current / scaleRef.current;
+        const startTime = Math.max(0, endTime - height / scaleRef.current);
         ctx.fillStyle = '#000';
         ctx.fillRect(0, 0, width, height);
+
+        updateView(props);
 
         const params = {
             ctx, startTime, endTime, mouse: inflate(mouseRef.current),
@@ -304,10 +314,10 @@ function Score(props) {
         renderTimers(props, params);
         renderTapLines(props, params);
         renderSnakes(props, params);
-        renderNotes(props, params);
         renderProgress(props, params);
         renderPlacementCaret(props, params);
         renderPlayerCaret(props, params);
+        renderNotes(props, params);
     }
     useFrame(render);
 

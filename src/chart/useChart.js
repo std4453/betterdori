@@ -1,4 +1,4 @@
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState, useCallback, useRef } from 'react';
 import createTree from 'functional-red-black-tree';
 import { useAutoSave } from './storage';
 import useResettableState from './useResettableState';
@@ -78,7 +78,7 @@ function useChart({ music, score }) {
 
     const [division, setDivision] = useState(initial.division);
     const [follow, setFollow] = useState(initial.follow);
-    const [scale, setScale] = useState(initial.scale);
+    const scaleRef = useRef(initial.scale);
 
     const quantize = useCallback((time) => {
         const { key: rangeStartTime, value: { bpm, beat: rangeStartBeat } } = time2Timers.le(time);
@@ -214,7 +214,7 @@ function useChart({ music, score }) {
     const params = {
         music, timers, setTimers, notes, setNotes,
         ranges, time2Timers, time2Notes,
-        ...initial, division, setDivision, follow, setFollow, scale, setScale, currentBPM, setCurrentBPM,
+        ...initial, division, setDivision, follow, setFollow, scaleRef, currentBPM, setCurrentBPM,
         quantize, countNotes, findNotePure, findNote, forEachNote, forEachGroup, matchNotePure, matchNote,
         tapLines, bars, snakes,
     };

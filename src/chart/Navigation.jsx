@@ -3,11 +3,12 @@ import useEvent from '../tools/useEvent';
 import { normalizeWheel } from '../utils';
 
 function Navigation({
-    music: { duration }, scale, setScale, scaleSpeed, minScale, maxScale, scrollSpeed, scrollRef, containerEl,
+    music: { duration }, scaleRef, scaleSpeed, minScale, maxScale, scrollSpeed, scrollRef, containerEl,
 }) {
     // scale = pixels per second
     const onWheel = useCallback((e) => {
         const { pixelY } = normalizeWheel(e);
+        const scale = scaleRef.current;
         if (e.ctrlKey) { // scaling
             const height = scale * duration;
             // scaling keeps the cursor unmoved, that is, 
@@ -23,7 +24,7 @@ function Navigation({
             if (newScroll < 0) newScroll = 0;
             if (newScroll + window.innerHeight > newHeight) newScroll = newHeight - window.innerHeight;
             scrollRef.current = newScroll;
-            setScale(newScale);
+            scaleRef.current = newScale;
         } else {
             const height = scale * duration;
             // scroll changes proportional to scale, a same scroll distance
@@ -34,7 +35,7 @@ function Navigation({
             if (newScroll + window.innerHeight > height) newScroll = height - window.innerHeight;
             scrollRef.current = newScroll;
         }
-    }, [scale, duration, scrollRef, scaleSpeed, minScale, maxScale, setScale, scrollSpeed]);
+    }, [scaleRef, duration, scrollRef, scaleSpeed, minScale, maxScale, scrollSpeed]);
     // prevent default ctrl+wheel zoom, for details about the { passive: false } option
     // in addEventListener, see https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener
     useEffect(() => {
@@ -51,9 +52,9 @@ function Navigation({
 
     // jump to scroll bottom initially
     useEffect(() => {
-        const height = duration * scale;
+        const height = duration * scaleRef.current;
         scrollRef.current = height - window.innerHeight;
-    }, [duration, scale, scrollRef]);
+    }, [duration, scaleRef, scrollRef]);
 
     return null;
 }
