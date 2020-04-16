@@ -38,7 +38,6 @@ function useChart({ music, score }) {
     }, [score]);
     const [timers, setTimers] = useResettableState(initialTimers);
     const [notes, setNotes] = useResettableState(initialNotes);
-    const [markers, setMarkers] = useState(createTree());
     useAutoSave({ timers, notes });
     
     const ranges = useMemo(() => {
@@ -76,17 +75,6 @@ function useChart({ music, score }) {
         }
         return res;
     }, [ranges, notes]);
-    const time2Markers = useMemo(() => {
-        let res = createTree();
-        for (const { beat1, beat2, time1, bpm } of ranges) {
-            // eslint-disable-next-line no-loop-func
-            markers.forEach((beat, marker) => {
-                const time = (beat - beat1) / bpm * 60 + time1;
-                res = res.insert(time, { ...marker, beat });
-            }, beat1, beat2);
-        }
-        return res;
-    }, [ranges, markers]);
 
     const [division, setDivision] = useState(initial.division);
     const [follow, setFollow] = useState(initial.follow);
@@ -168,8 +156,8 @@ function useChart({ music, score }) {
     const [currentBPM, setCurrentBPM] = useState(initial.bpm);
 
     const params = {
-        music, timers, setTimers, notes, setNotes, markers, setMarkers,
-        ranges, time2Timers, time2Notes, time2Markers,
+        music, timers, setTimers, notes, setNotes,
+        ranges, time2Timers, time2Notes,
         ...initial, division, setDivision, follow, setFollow, scale, setScale, currentBPM, setCurrentBPM,
         quantize, countNotes, findNotePure, findNote, forEachNote, forEachGroup, matchNotePure, matchNote,
     };

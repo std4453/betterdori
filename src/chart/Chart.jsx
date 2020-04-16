@@ -20,7 +20,6 @@ import Player from '../tools/Player';
 import SoundFX from '../tools/SoundFX';
 import Progress from '../tools/Progress';
 import PlayerCaret from '../tools/PlayerCaret';
-import Markers from '../tools/Markers';
 import Placement from '../tools/Placement';
 import Divisions from '../tools/Divisions';
 import PlacementCaret from '../tools/PlacementCaret';
@@ -61,18 +60,16 @@ function Chart({ music, score }) {
                 <Timers {...params}/>
 
                 <PlacementCaret {...params}/>
-                <Placement {...params}/>
 
                 <CanvasNotes {...params}/>
 
                 <PlayerCaret {...params}/>
                 <Progress {...params}/>
-                {/* <Markers {...params}/> */}
-
-                <Modification  {...params}/>
-                <PlaceTimer {...params}/>
-                <Select {...params}/>
             </Score>
+            <PlaceTimer {...params}/>
+            <Modification  {...params}/>
+            <Placement {...params}/>
+            <Select {...params}/>
             <Divisions {...params}/>
             <Player {...params}/>
             <SoundFX {...params}/>
