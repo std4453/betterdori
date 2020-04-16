@@ -19,10 +19,8 @@ import ThumbTimers from './ThumbTimers';
 import Player from '../tools/Player';
 import SoundFX from '../tools/SoundFX';
 import Progress from '../tools/Progress';
-import PlayerCaret from '../tools/PlayerCaret';
 import Placement from '../tools/Placement';
 import Divisions from '../tools/Divisions';
-import PlacementCaret from '../tools/PlacementCaret';
 import Modification from '../tools/Modification';
 import PlaceTimer from '../tools/PlaceTimer';
 import Select from '../tools/Select';
@@ -57,15 +55,9 @@ function Chart({ music, score }) {
     return <>
         <div className={classes.middle}>
             <Score {...params}>
-                <Timers {...params}/>
-
-                <PlacementCaret {...params}/>
-
                 <CanvasNotes {...params}/>
-
-                <PlayerCaret {...params}/>
-                <Progress {...params}/>
             </Score>
+            <Progress {...params}/>
             <PlaceTimer {...params}/>
             <Modification  {...params}/>
             <Placement {...params}/>

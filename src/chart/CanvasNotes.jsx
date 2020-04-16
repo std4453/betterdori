@@ -1,6 +1,7 @@
-import React, { useMemo, useEffect, useState, useCallback } from 'react';
+import React, { useMemo, useEffect, useState, useCallback, useRef } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import useFrame from '../tools/useFrame';
+import useEvent from '../tools/useEvent';
 
 const useStyles = makeStyles({
     root: {
@@ -158,9 +159,89 @@ function renderLanes(
     }
 }
 
+function renderProgress({ ctx, width }, progress) {
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#FF4E67';
+    ctx.beginPath();
+    ctx.moveTo(0, progress);
+    ctx.lineTo(width, progress);
+    ctx.stroke();
+}
+
+function renderPlacementCaret(
+    { ctx, quantize, mouse: { time }, width, duration, scale, scroll },
+) {
+    const { time: quantizedTime, beat } = quantize(time);
+    const laneWidth = width / 11;
+    const cy = (duration - quantizedTime) * scale - scroll;
+
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#5996FF';
+    ctx.beginPath();
+    ctx.moveTo(laneWidth * 2, cy);
+    ctx.lineTo(laneWidth * 9, cy);
+    ctx.stroke();
+
+    ctx.fillStyle = '#5996FF';
+    ctx.font = `${laneWidth * 0.6}px D-Din`;
+    ctx.textAlign = 'end';
+    ctx.fillText(`${beat.toFixed(2)}'`, laneWidth * 2 - laneWidth * 0.15, cy + laneWidth * 0.3);
+}
+
+function renderPlayerCaret(
+    { ctx, mouse: { time }, width, scroll, scale, duration, countNotes },
+) {
+    const laneWidth = width / 11;
+    const cy = (duration - time) * scale - scroll;
+
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#5996FF';
+    ctx.beginPath();
+    ctx.moveTo(laneWidth * 2, cy);
+    ctx.lineTo(laneWidth * 9, cy);
+    ctx.stroke();
+
+    ctx.fillStyle = '#5996FF';
+    ctx.font = `${laneWidth * 0.6}px D-Din`;
+    ctx.textAlign = 'end';
+    ctx.fillText(`${countNotes(time)}`, laneWidth * (2 - 0.15), cy + laneWidth * 0.3);
+}
+
+function renderTimers(
+    { ctx, width, scroll, duration, scale, startTime, endTime },
+    time2Timers,
+) {
+    const laneWidth = width / 11;
+    const deltaTime = laneWidth / scale / 2;
+    ctx.fillStyle = '#FFCD18';
+    ctx.textAlign = 'start';
+    ctx.font = `${laneWidth * 0.6}px D-Din`;
+
+    const bottomTime = Math.max(duration - (scroll + window.innerHeight) / scale, 0);
+    const threshold = 1.25;
+    const { key: nextTime, valid } = time2Timers.gt(bottomTime);
+    if (valid && (nextTime - bottomTime) >= laneWidth * threshold / scale) {
+        const { value: { bpm } } = time2Timers.le(bottomTime);
+        ctx.fillText(`${bpm}`, (9 + 0.15) * laneWidth, window.innerHeight - 0.36 * laneWidth);
+    }
+
+    ctx.strokeStyle = '#FFCD18';
+    ctx.lineWidth = 3;
+    time2Timers.forEach((time, { bpm }) => {
+        if (time < startTime - deltaTime || time > endTime + deltaTime) return;
+        const cy = (duration - time) * scale - scroll;
+        ctx.beginPath();
+        ctx.moveTo(2 * laneWidth, cy);
+        ctx.lineTo(9 * laneWidth, cy);
+        ctx.stroke();
+        ctx.fillText(`${bpm}`, (9 + 0.15) * laneWidth, cy + 0.3 * laneWidth);
+    });
+}
+
 function CanvasNotes({
     time2Notes, music: { duration }, forEachNote, forEachGroup, code,
-    containerEl, scale, ranges, division, scrollRef,
+    scale, ranges, division, scrollRef, music, follow, keepInView, progressOffset,
+    inflate, containerEl, quantize, countNotes, time2Timers,
 }) {
     const classes = useStyles();
 
@@ -231,25 +312,47 @@ function CanvasNotes({
         canvas.height = window.innerHeight;
     }, [canvas]);
 
+    const mouseRef = useRef({ clientX: 0, clientY: 0 });
+    const updateMouse = useCallback((e) => {
+        mouseRef.current = e;
+    }, []);
+    useEvent(containerEl, 'mousemove', updateMouse);
+
     const render = useCallback(() => {
         if (!ctx || !canvas) return;
+
+        const progress = (duration - music.currentTime) * scale;
+        if (follow && !music.paused) keepInView(progress + progressOffset);
+
         const { width, height } = canvas;
         const scroll = scrollRef.current;
-        // const scroll = containerEl.scrollTop;
         const endTime = duration - scroll / scale;
         const startTime = Math.max(0, endTime - height / scale);
         ctx.fillStyle = '#000';
         ctx.fillRect(0, 0, width, height);
-        const params = { ctx, width, height, startTime, endTime, scroll, duration, code, scale };
+        const params = {
+            ctx, width, height, startTime, endTime, scroll, duration, code, scale,
+            quantize, mouse: inflate(mouseRef.current), countNotes,
+        };
 
         renderLanes(params);
         bars.forEach(bar => renderBar(params, bar));
+        renderTimers(params, time2Timers);
         tapLines.forEach(tapLine => renderTapLine(params, tapLine));
         snakes.forEach(snake => renderSnake(params, snake));
         time2Notes.forEach((time, note) => {
             renderNote(params, time, note);
         });
-    }, [bars, canvas, code, containerEl, ctx, duration, scale, snakes, tapLines, time2Notes]);
+        if (code === 'player') {
+            renderProgress(params, progress - scroll);
+        }
+        if (code.startsWith('placement/') || code.startsWith('modification/') || code === 'timer') {
+            renderPlacementCaret(params);
+        }
+        if (code === 'player') {
+            renderPlayerCaret(params);
+        }
+    }, [bars, canvas, code, countNotes, ctx, duration, follow, inflate, keepInView, music, progressOffset, quantize, scale, scrollRef, snakes, tapLines, time2Notes, time2Timers]);
     useFrame(render);
     
     return (
