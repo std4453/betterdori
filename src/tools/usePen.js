@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import useDrag from './useDrag';
 
 const usePen = ({
-    notes, setNotes, inflate, code, findNotePure, matchNotePure, time2Timers, quantize, innerEl,
+    notes, setNotes, inflate, code, findNotePure, matchNotePure, time2Timers, quantize, containerEl,
 }, {
     prefix, useRemove = true, type, onClick, quantizeThreshold = 0.25, snapThreshold = 0.1,
 }) => {
@@ -115,7 +115,7 @@ const usePen = ({
         type, useRemove, onClick, quantizeThreshold, snapThreshold,
     ]);
 
-    useDrag({ onDragStart, onDrag, onDragEnd, el: innerEl });
+    useDrag({ onDragStart, onDrag, onDragEnd, el: containerEl });
 };
 
 export default usePen;

@@ -84,7 +84,7 @@ function Timer({ time, bpm, duration, observer }) {
     );
 }
 
-function Timers({ time2Timers, music: { duration }, containerEl, innerEl }) {
+function Timers({ time2Timers, music: { duration }, scrollRef, scale, rect }) {
     const classes = useStyles();
 
     const onIntersect = useCallback((entries) => {
@@ -111,12 +111,15 @@ function Timers({ time2Timers, music: { duration }, containerEl, innerEl }) {
 
     const [lastBPMEl, setLastBPMEl] = useState(null);
     const updateTimerEls = useCallback(() => {
-        if (!containerEl || !innerEl || !lastBPMEl) return;
-        const { height, width } = innerEl.getBoundingClientRect();
+        if (!lastBPMEl) return;
+        const height = duration * scale;
+        const { width } = rect;
+        // const { height, width } = innerEl.getBoundingClientRect();
         // on music change, duration will become 0 suddenly, before React could even
         // 'react' on the change, whicl will make bottomTime -Infinity, crashing the
         // application bu timer2Timers.le(bottomTime) returning nothing.
-        const bottomTime = Math.max((1 - (containerEl.scrollTop + window.innerHeight) / height) * duration, 0);
+        const bottomTime = Math.max((1 - (scrollRef.current + window.innerHeight) / height) * duration, 0);
+        // const bottomTime = Math.max((1 - (containerEl.scrollTop + window.innerHeight) / height) * duration, 0);
         const em = width / 11;
         const threshold = 1.25;
         const { key: nextTime, valid } = time2Timers.gt(bottomTime);
@@ -129,7 +132,7 @@ function Timers({ time2Timers, music: { duration }, containerEl, innerEl }) {
                 lastBPMEl.innerHTML = `${bpm}`;
             }
         }
-    }, [containerEl, duration, innerEl, lastBPMEl, time2Timers]);
+    }, [duration, lastBPMEl, rect, scale, scrollRef, time2Timers]);
     useFrame(updateTimerEls);
 
     return (

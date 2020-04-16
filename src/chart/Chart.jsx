@@ -10,6 +10,7 @@ import useChart from './useChart';
 import Score from './Score';
 import Bars from './Bars';
 import Notes from './Notes';
+import CanvasNotes from './CanvasNotes';
 import Thumb from './Thumb';
 import Stencil from './Stencil';
 import Timers from './Timers';
@@ -57,25 +58,24 @@ function Chart({ music, score }) {
     return <>
         <div className={classes.middle}>
             <Score {...params}>
-                <Bars {...params}/>
                 <Timers {...params}/>
 
                 <PlacementCaret {...params}/>
                 <Placement {...params}/>
 
-                <Notes {...params}/>
+                <CanvasNotes {...params}/>
 
                 <PlayerCaret {...params}/>
                 <Progress {...params}/>
-                <Player {...params}/>
-                <SoundFX {...params}/>
-                <Markers {...params}/>
+                {/* <Markers {...params}/> */}
 
-                <Divisions {...params}/>
                 <Modification  {...params}/>
                 <PlaceTimer {...params}/>
                 <Select {...params}/>
             </Score>
+            <Divisions {...params}/>
+            <Player {...params}/>
+            <SoundFX {...params}/>
             <Controls music={music} {...params}/>
         </div>
         <div className={classes.right}>
@@ -83,7 +83,7 @@ function Chart({ music, score }) {
                 <Bars {...params} division={1 / 4} thumb={true}/>
                 <ThumbTimers {...params}/>
                 <Notes {...params} thumb={true}/>
-                <Stencil {...params}/>
+                {/* <Stencil {...params}/> */}
             </Thumb>
         </div>
     </>;

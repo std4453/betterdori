@@ -26,7 +26,7 @@ const snapThreshold = 0.1;
 
 function Select({
     code, inflate, setCode, notes, setNotes, time2Timers, matchNotePure, findNotePure,
-    innerEl, quantize, deflate,
+    containerEl, quantize, deflate,
 }) {
     const classes = useStyles();
     const setSelect = useCallback(() => setCode('select'), [setCode]);
@@ -251,7 +251,7 @@ function Select({
         if (dragArea) dragArea.style.visibility = 'hidden';
         if (dragLine) dragLine.style.visibility = 'hidden';
     }, [clearSelectionPure, dragArea, dragLine, findNotePure, inflate, matchNotePure, notes, quantize, setNotes, time2Timers, toggleNotesPure]);
-    useDrag({ onDragStart, onDrag, onDragEnd, el: innerEl });
+    useDrag({ onDragStart, onDrag, onDragEnd, el: containerEl });
     
     return <>
         <KeyboardEventHandler handleKeys={['v']} onKeyEvent={setSelect}/>

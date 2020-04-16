@@ -1,11 +1,20 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 
 const useScore = ({ music: { duration }, time2Timers, scale }) => {
     const [containerEl, setContainerEl] = useState(null);
     const [innerEl, setInnerEl] = useState(null);
+    const scrollRef = useRef(0);
+    const [rect, setRect] = useState({ x: 0, width: 100 });
+    useEffect(() => {
+        if (!containerEl) return;
+        setRect(containerEl.getBoundingClientRect());
+    }, [containerEl]);
 
     const inflate = useCallback((e) => {
-        const { x, y, height, width } = innerEl.getBoundingClientRect();
+        const { x, width } = rect;
+        const y = -scrollRef.current;
+        const height = scale * duration;
+        // const { x, y, height, width } = innerEl.getBoundingClientRect();
         const top = e.clientY - y;
         const left = e.clientX - x;
         const time = (1 - top / height) * duration;
@@ -14,27 +23,31 @@ const useScore = ({ music: { duration }, time2Timers, scale }) => {
         const lane = left / width * 11 - 2.5;
         const ratioTop = top / height;
         return { top, left, time, beat, lane, ratioTop };
-    }, [duration, innerEl, time2Timers]);
+    }, [duration, rect, scale, time2Timers]);
 
     const keepInView = useCallback((position) => {
         const height = scale * duration;
         let viewTop = position - window.innerHeight;
         if (viewTop < 0) viewTop = 0;
         else if (position > height) viewTop = height - window.innerHeight;
-        if (containerEl) containerEl.scrollTop = viewTop;
-    }, [containerEl, duration, scale]);
+        scrollRef.current = viewTop;
+        // if (containerEl) containerEl.scrollTop = viewTop;
+    }, [duration, scale]);
 
     const deflate = useCallback(({ time, lane }) => {
-        const { x, y, width, height } = innerEl.getBoundingClientRect();
+        const { x, width } = rect;
+        const y = -scrollRef.current;
+        const height = scale * duration;
+        // const { x, y, width, height } = innerEl.getBoundingClientRect();
         return {
             x: x + (lane + 2.5) / 11 * width,
             y: y + height * (1 - time / duration),
         };
-    }, [duration, innerEl]);
+    }, [duration, rect, scale]);
     
     const params = {
         containerEl, setContainerEl, innerEl, setInnerEl,
-        inflate, keepInView, deflate,
+        inflate, keepInView, deflate, scrollRef, rect,
     };
 
     return params;

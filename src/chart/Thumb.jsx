@@ -16,36 +16,43 @@ const useStyles = makeStyles({
     },
 });
 
-function Thumb({ children, scale, music: { duration }, containerEl, innerEl, thumbScrollSpeed }) {
+function Thumb({
+    children, scale, music: { duration }, containerEl, thumbScrollSpeed, scrollRef,
+}) {
     const classes = useStyles();
 
     const [thumbEl, setThumbEl] = useState(null);
     const updateScroll = useCallback((e, { left }) => {
-        if (!containerEl || !innerEl) return;
+        if (!containerEl) return;
         if (!left) return;
         const position = e.clientY / window.innerHeight * duration;
         const viewSize = window.innerHeight / scale; // in seconds
-        const { height } = innerEl.getBoundingClientRect();
+        const height = duration * scale;
+        // const { height } = innerEl.getBoundingClientRect();
         let top = (position - viewSize / 2) / duration * height; // in px
         if (top < 0) top = 0;
         if (top + window.innerHeight > height) top = height - window.innerHeight;
-        containerEl.scrollTop = top;
-    }, [containerEl, duration, innerEl, scale]);
+        scrollRef.current = top;
+        // containerEl.scrollTop = top;
+    }, [containerEl, duration, scale, scrollRef]);
     useDrag({ onDrag: updateScroll, onDragEnd: updateScroll, el: thumbEl });
 
     // scale = pixels per second
     const onWheel = useCallback((e) => {
-        if (!containerEl || !innerEl) return;
+        if (!containerEl) return;
         const { pixelY } = normalizeWheel(e.nativeEvent);
-        const { height } = innerEl.getBoundingClientRect();
-        const viewTop = containerEl.scrollTop / height * window.innerHeight;
+        const height = duration * scale;
+        // const { height } = innerEl.getBoundingClientRect();
+        const viewTop = scrollRef.current / height * window.innerHeight;
+        // const viewTop = containerEl.scrollTop / height * window.innerHeight;
         const viewHeight = window.innerHeight / scale;
         let newTop = viewTop + pixelY * thumbScrollSpeed;
         if (newTop < 0) newTop = 0;
         if (newTop + viewHeight > window.innerHeight) newTop = window.innerHeight - viewHeight;
         const newScroll = newTop / window.innerHeight * height;
-        containerEl.scrollTop = newScroll;
-    }, [containerEl, innerEl, scale, thumbScrollSpeed]);
+        scrollRef.current = newScroll;
+        // containerEl.scrollTop = newScroll;
+    }, [containerEl, duration, scale, scrollRef, thumbScrollSpeed]);
 
     return (
         <div className={classes.root} ref={setThumbEl} onWheel={onWheel}>

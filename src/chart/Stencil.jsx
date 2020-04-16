@@ -15,16 +15,18 @@ const useStyles = makeStyles({
     },
 });
 
-function Stencil({ innerEl, containerEl }) {
+function Stencil({ music: { duration }, scale, scrollRef }) {
     const classes = useStyles();
 
     const [upperEl, setUpperEl] = useState(null);
     const [lowerEl, setLowerEl] = useState(null);
     const updateStencil = useCallback(() => {
-        if (!innerEl) return;
-        const height = innerEl.getBoundingClientRect().height;
-        const top = containerEl.scrollTop / height;
-        const bottom = (containerEl.scrollTop + window.innerHeight) / height;
+        const height = duration * scale;
+        // const height = innerEl.getBoundingClientRect().height;
+        const top = scrollRef.current / height;
+        const bottom = (scrollRef.current + window.innerHeight) / height;
+        // const top = containerEl.scrollTop / height;
+        // const bottom = (containerEl.scrollTop + window.innerHeight) / height;
         if (upperEl) {
             upperEl.style.transform = `translateY(
                 ${-(1 - top) * 100}%
@@ -35,7 +37,7 @@ function Stencil({ innerEl, containerEl }) {
                 ${bottom * 100}%
             )`;
         }
-    }, [innerEl, containerEl, upperEl, lowerEl]);
+    }, [duration, scale, scrollRef, upperEl, lowerEl]);
     useFrame(updateStencil);
     
     return <>

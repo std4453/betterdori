@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useCallback, useEffect } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { normalizeWheel } from '../utils';
@@ -23,7 +24,7 @@ const useStyles = makeStyles({
 
 function Score({
     music, scale, setScale, scaleSpeed, minScale, maxScale, scrollSpeed,
-    containerEl, setContainerEl, innerEl, setInnerEl, children
+    containerEl, setContainerEl, setInnerEl, children, scrollRef,
 }) {
     const classes = useStyles();
 
@@ -34,7 +35,8 @@ function Score({
         if (e.ctrlKey) { // scaling
             const height = scale * music.duration;
             // scaling keeps the cursor unmoved, that is, 
-            const ratio = (e.clientY + containerEl.scrollTop) / height;
+            const ratio = (e.clientY + scrollRef.current) / height;
+            // const ratio = (e.clientY + containerEl.scrollTop) / height;
             // scale changes on a proportional basis, a same scroll distance
             // results in a same proportion of scale change.
             let newScale = scale * (1 - pixelY * scaleSpeed);
@@ -45,7 +47,8 @@ function Score({
             // keep whole score in viewport
             if (newScroll < 0) newScroll = 0;
             if (newScroll + window.innerHeight > newHeight) newScroll = newHeight - window.innerHeight;
-            containerEl.scrollTop = newScroll;
+            scrollRef.current = newScroll;
+            // containerEl.scrollTop = newScroll;
             containerEl.style.setProperty('--score-second', `${newScale}px`);
             containerEl.style.setProperty('--score-percent', `${newScale * music.duration / 100}px`);
             setScale(newScale);
@@ -53,13 +56,15 @@ function Score({
             const height = scale * music.duration;
             // scroll changes proportional to scale, a same scroll distance
             // results in a same scroll change measured in *beats*. 
-            let newScroll = containerEl.scrollTop + pixelY * scrollSpeed * Math.sqrt(scale);
+            let newScroll = scrollRef.current + pixelY * scrollSpeed * Math.sqrt(scale);
+            // let newScroll = containerEl.scrollTop + pixelY * scrollSpeed * Math.sqrt(scale);
             // keep whole score in viewport
             if (newScroll < 0) newScroll = 0;
             if (newScroll + window.innerHeight > height) newScroll = height - window.innerHeight;
-            containerEl.scrollTop = newScroll;
+            scrollRef.current = newScroll;
+            // containerEl.scrollTop = newScroll;
         }
-    }, [containerEl, scale, music.duration, scaleSpeed, minScale, maxScale, setScale, scrollSpeed]);
+    }, [containerEl, scale, music.duration, scrollRef, scaleSpeed, minScale, maxScale, setScale, scrollSpeed]);
     // prevent default ctrl+wheel zoom, for details about the { passive: false } option
     // in addEventListener, see https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener
     useEffect(() => {
@@ -76,10 +81,11 @@ function Score({
     // jump to scroll bottom initially, use getBoundingClientRect() so that this
     // will run only once, upon mounting (instead of every time scale changes).
     useEffect(() => {
-        if (!innerEl || !containerEl) return;
-        const { height } = innerEl.getBoundingClientRect();
-        containerEl.scrollTop = height - window.innerHeight;
-    }, [containerEl, innerEl]);
+        const height = music.duration * scale;
+        // const { height } = innerEl.getBoundingClientRect();
+        scrollRef.current = height - window.innerHeight;
+        // containerEl.scrollTop = height - window.innerHeight;
+    }, [scrollRef]);
 
     const onContextMenu = useCallback((e) => {
         e.preventDefault();

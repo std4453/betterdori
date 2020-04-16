@@ -26,7 +26,7 @@ const useStyles = makeStyles({
     },
 });
 
-function PlacementCaret({ music: { duration }, innerEl, quantize, inflate, code }) {
+function PlacementCaret({ music: { duration }, containerEl, quantize, inflate, code }) {
     const classes = useStyles();
 
     const [caretEl, setCaretEl] = useState(null);
@@ -37,7 +37,7 @@ function PlacementCaret({ music: { duration }, innerEl, quantize, inflate, code 
         if (caretEl) caretEl.style.bottom = `${quantizedTime / duration * 100}%`;
         if (notesCounterEl) notesCounterEl.innerHTML = `${beat.toFixed(2)}'`;
     }, [inflate, quantize, caretEl, duration, notesCounterEl]);
-    useEvent(innerEl, 'mousemove', updateCaret);
+    useEvent(containerEl, 'mousemove', updateCaret);
 
     return (code.startsWith('placement/') || code.startsWith('modification/') || code === 'timer') && (
         <div ref={setCaretEl} className={classes.root}>

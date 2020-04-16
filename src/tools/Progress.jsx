@@ -17,7 +17,7 @@ const useStyles = makeStyles({
 });
 
 function Progress({
-    music, innerEl, follow, progressOffset, code, keepInView, inflate, scale,
+    music, containerEl, follow, progressOffset, code, keepInView, inflate, scale,
 }) {
     const classes = useStyles();
 
@@ -47,7 +47,7 @@ function Progress({
         if (music.paused) music.play();
         updateProgress(true);
     }, [code, inflate, music, updateProgress]);
-    useEvent(innerEl, 'click', seekProgress);
+    useEvent(containerEl, 'click', seekProgress);
     
     useEffect(updateProgress, [updateProgress, code]);
     return code === 'player' && (

@@ -26,7 +26,7 @@ const useStyles = makeStyles({
     },
 });
 
-function PlayerCaret({ inflate, innerEl, countNotes, code }) {
+function PlayerCaret({ inflate, containerEl, countNotes, code }) {
     const classes = useStyles();
 
     const [caretEl, setCaretEl] = useState(null);
@@ -36,7 +36,7 @@ function PlayerCaret({ inflate, innerEl, countNotes, code }) {
         if (caretEl) caretEl.style.top = `${ratioTop * 100}%`;
         if (notesCounterEl) notesCounterEl.innerHTML = `${countNotes(time)}`;
     }, [caretEl, notesCounterEl, inflate, countNotes]);
-    useEvent(innerEl, 'mousemove', updateCaret);
+    useEvent(containerEl, 'mousemove', updateCaret);
 
     return code === 'player' && (
         <div ref={setCaretEl} className={classes.root}>
