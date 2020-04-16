@@ -10,10 +10,8 @@ import useChart from './useChart';
 import Score from './Score';
 import Bars from './Bars';
 import Notes from './Notes';
-import CanvasNotes from './CanvasNotes';
 import Thumb from './Thumb';
 import Stencil from './Stencil';
-import Timers from './Timers';
 import ThumbTimers from './ThumbTimers';
 
 import Player from '../tools/Player';
@@ -54,9 +52,7 @@ function Chart({ music, score }) {
 
     return <>
         <div className={classes.middle}>
-            <Score {...params}>
-                <CanvasNotes {...params}/>
-            </Score>
+            <Score {...params}/>
             <Progress {...params}/>
             <PlaceTimer {...params}/>
             <Modification  {...params}/>

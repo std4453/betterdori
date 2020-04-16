@@ -2,7 +2,6 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 
 const useScore = ({ music: { duration }, time2Timers, scale }) => {
     const [containerEl, setContainerEl] = useState(null);
-    const [innerEl, setInnerEl] = useState(null);
     const scrollRef = useRef(0);
     const [rect, setRect] = useState({ x: 0, width: 100 });
     useEffect(() => {
@@ -14,7 +13,6 @@ const useScore = ({ music: { duration }, time2Timers, scale }) => {
         const { x, width } = rect;
         const y = -scrollRef.current;
         const height = scale * duration;
-        // const { x, y, height, width } = innerEl.getBoundingClientRect();
         const top = e.clientY - y;
         const left = e.clientX - x;
         const time = (1 - top / height) * duration;
@@ -31,14 +29,12 @@ const useScore = ({ music: { duration }, time2Timers, scale }) => {
         if (viewTop < 0) viewTop = 0;
         else if (position > height) viewTop = height - window.innerHeight;
         scrollRef.current = viewTop;
-        // if (containerEl) containerEl.scrollTop = viewTop;
     }, [duration, scale]);
 
     const deflate = useCallback(({ time, lane }) => {
         const { x, width } = rect;
         const y = -scrollRef.current;
         const height = scale * duration;
-        // const { x, y, width, height } = innerEl.getBoundingClientRect();
         return {
             x: x + (lane + 2.5) / 11 * width,
             y: y + height * (1 - time / duration),
@@ -46,7 +42,7 @@ const useScore = ({ music: { duration }, time2Timers, scale }) => {
     }, [duration, rect, scale]);
     
     const params = {
-        containerEl, setContainerEl, innerEl, setInnerEl,
+        containerEl, setContainerEl,
         inflate, keepInView, deflate, scrollRef, rect,
     };
 
