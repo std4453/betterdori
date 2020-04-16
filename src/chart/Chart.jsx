@@ -22,6 +22,7 @@ import Divisions from '../tools/Divisions';
 import Modification from '../tools/Modification';
 import PlaceTimer from '../tools/PlaceTimer';
 import Select from '../tools/Select';
+import Navigation from './Navigation';
 
 const useStyles = makeStyles({
     middle: {
@@ -53,6 +54,7 @@ function Chart({ music, score }) {
     return <>
         <div className={classes.middle}>
             <Score {...params}/>
+            <Navigation {...params}/>
             <Progress {...params}/>
             <PlaceTimer {...params}/>
             <Modification  {...params}/>
@@ -61,7 +63,7 @@ function Chart({ music, score }) {
             <Divisions {...params}/>
             <Player {...params}/>
             <SoundFX {...params}/>
-            <Controls music={music} {...params}/>
+            <Controls {...params}/>
         </div>
         <div className={classes.right}>
             <Thumb {...params}>

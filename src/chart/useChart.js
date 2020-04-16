@@ -155,11 +155,68 @@ function useChart({ music, score }) {
 
     const [currentBPM, setCurrentBPM] = useState(initial.bpm);
 
+    const snakes = useMemo(() => {
+        const res = [];
+        ['A', 'B'].forEach((pos) => {
+            let lastY = 0, lastLane = -1;
+            forEachNote((time, { lane, end }) => {
+                if (lastLane !== -1) {
+                    const y1 = time;
+                    res.push({
+                        x0: lastLane, x1: lane,
+                        y0: lastY, y1,
+                    });
+                }
+                lastLane = end ? -1 : lane;
+                lastY = time;
+            }, { pos, note: 'Slide' });
+        });
+        return res;
+    }, [forEachNote]);
+
+    const tapLines = useMemo(() => {
+        const res = [];
+        forEachGroup((time, notes) => {
+            let minLane = 8, maxLane = -1;
+            for (const { lane, note: type, start, end } of notes) {
+                // Synchronus tap line appears two notes possess the same beat,
+                // but middle slide notes are not counted
+                if (type !== 'Slide' || start || end) {
+                    minLane = Math.min(minLane, lane);
+                    maxLane = Math.max(maxLane, lane);
+                }
+            }
+            if (minLane < maxLane - 1) { // at least two notes, distance >= 2, display sync tap line
+                res.push({
+                    time, minLane, maxLane,
+                });
+            }
+        });
+        return res;
+    }, [forEachGroup]);
+
+    const bars = useMemo(() => {
+        const bars = [];
+        for (const { beat1, beat2, bpm, time1 } of ranges) {
+            for (let beat = beat1; beat < beat2; beat += 1 / division) {
+                const deltaBeat = beat - beat1;
+                const time = time1 + deltaBeat / bpm * 60;
+                // use epsilon to avoid round off errors
+                const major = Math.abs(Math.round(deltaBeat) - deltaBeat) < 1e-5;
+                bars.push({
+                    time, major,
+                });
+            }
+        }
+        return bars;
+    }, [ranges, division]);
+
     const params = {
         music, timers, setTimers, notes, setNotes,
         ranges, time2Timers, time2Notes,
         ...initial, division, setDivision, follow, setFollow, scale, setScale, currentBPM, setCurrentBPM,
         quantize, countNotes, findNotePure, findNote, forEachNote, forEachGroup, matchNotePure, matchNote,
+        tapLines, bars, snakes,
     };
 
     return params;

@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
+import useEvent from '../tools/useEvent';
 
 const useScore = ({ music: { duration }, time2Timers, scale }) => {
     const [containerEl, setContainerEl] = useState(null);
@@ -40,10 +41,16 @@ const useScore = ({ music: { duration }, time2Timers, scale }) => {
             y: y + height * (1 - time / duration),
         };
     }, [duration, rect, scale]);
+
+    const mouseRef = useRef({ clientX: 0, clientY: 0 });
+    const updateMouse = useCallback((e) => {
+        mouseRef.current = e;
+    }, []);
+    useEvent(containerEl, 'mousemove', updateMouse);
     
     const params = {
         containerEl, setContainerEl,
-        inflate, keepInView, deflate, scrollRef, rect,
+        inflate, keepInView, deflate, scrollRef, rect, mouseRef,
     };
 
     return params;
